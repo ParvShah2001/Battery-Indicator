@@ -17,6 +17,10 @@
   <a href="https://github.com"><img src="https://img.shields.io/badge/Architecture-x64-orange" alt="Architecture" /></a>
 </p>
 
+<p align="center">
+  <img src="social-preview.png" alt="Battery Indicator Windows 11 Showcase" width="100%" />
+</p>
+
 ---
 
 ## 📌 Why Battery Indicator?
