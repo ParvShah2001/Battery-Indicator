@@ -1,0 +1,76 @@
+using System;
+using System.IO;
+using System.Text.Json;
+
+namespace BatteryIndicator.Services;
+
+public class AppSettings
+{
+    public int LowBatteryThreshold { get; set; } = 20;
+    public bool LowBatteryAlertsEnabled { get; set; } = true;
+}
+
+/// <summary>
+/// Manages application configuration and user preferences (e.g. Low Battery Alert threshold).
+/// </summary>
+public static class SettingsManager
+{
+    private static readonly string SettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+    private static AppSettings _currentSettings = new();
+
+    static SettingsManager()
+    {
+        Load();
+    }
+
+    public static int LowBatteryThreshold
+    {
+        get => _currentSettings.LowBatteryThreshold;
+        set
+        {
+            _currentSettings.LowBatteryThreshold = Math.Clamp(value, 5, 50);
+            Save();
+        }
+    }
+
+    public static bool LowBatteryAlertsEnabled
+    {
+        get => _currentSettings.LowBatteryAlertsEnabled;
+        set
+        {
+            _currentSettings.LowBatteryAlertsEnabled = value;
+            Save();
+        }
+    }
+
+    public static void Load()
+    {
+        try
+        {
+            if (File.Exists(SettingsFile))
+            {
+                string json = File.ReadAllText(SettingsFile);
+                var loaded = JsonSerializer.Deserialize<AppSettings>(json);
+                if (loaded != null)
+                {
+                    _currentSettings = loaded;
+                }
+            }
+            else
+            {
+                Save();
+            }
+        }
+        catch { }
+    }
+
+    public static void Save()
+    {
+        try
+        {
+            string json = JsonSerializer.Serialize(_currentSettings, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(SettingsFile, json);
+        }
+        catch { }
+    }
+}

@@ -1,0 +1,4 @@
+{
+  "LowBatteryThreshold": 20,
+  "LowBatteryAlertsEnabled": true
+}

@@ -1,0 +1,33 @@
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\HidSharp.dll
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Microsoft.Windows.SDK.NET.dll
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\WinRT.Runtime.dll
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.csproj.AssemblyReference.cache
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.GeneratedMSBuildEditorConfig.editorconfig
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.AssemblyInfoInputs.cache
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.AssemblyInfo.cs
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.csproj.CoreCompileInputs.cache
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryI.7EA802D4.Up2Date
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\BatteryIndicator.genruntimeconfig.cache
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\app.ico
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.exe
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.deps.json
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.runtimeconfig.json
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.dll
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.pdb
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.dll
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\refint\Battery Indicator.dll
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\Battery Indicator.pdb
+D:\github\Battery-Indicator\obj\Release\net9.0-windows10.0.19041.0\win-x64\ref\Battery Indicator.dll
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\app.ico
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\README.txt
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\app.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\earbuds.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\gamepad.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\headphones.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\keyboard.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\mouse.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\phone.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\speaker.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\stylus.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\vr.png
+D:\github\Battery-Indicator\bin\Release\net9.0-windows10.0.19041.0\win-x64\Resources\Icons\wheel.png

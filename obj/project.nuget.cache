@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "aCfKGQS6uSQ=",
+  "success": true,
+  "projectFilePath": "D:\\github\\Battery-Indicator\\BatteryIndicator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\parvs\\.nuget\\packages\\hidsharp\\2.6.4\\hidsharp.2.6.4.nupkg.sha512",
+    "C:\\Users\\parvs\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.57\\microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg.sha512"
+  ],
+  "logs": []
+}

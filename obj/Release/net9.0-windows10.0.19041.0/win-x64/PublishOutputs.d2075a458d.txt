@@ -1,0 +1,22 @@
+D:\github\Battery-Indicator\publish\Battery Indicator.exe
+D:\github\Battery-Indicator\publish\app.ico
+D:\github\Battery-Indicator\publish\Resources\Icons\app.ico
+D:\github\Battery-Indicator\publish\Resources\Icons\app.png
+D:\github\Battery-Indicator\publish\Resources\Icons\earbuds.png
+D:\github\Battery-Indicator\publish\Resources\Icons\gamepad.png
+D:\github\Battery-Indicator\publish\Resources\Icons\headphones.png
+D:\github\Battery-Indicator\publish\Resources\Icons\keyboard.png
+D:\github\Battery-Indicator\publish\Resources\Icons\mouse.png
+D:\github\Battery-Indicator\publish\Resources\Icons\phone.png
+D:\github\Battery-Indicator\publish\Resources\Icons\README.txt
+D:\github\Battery-Indicator\publish\Resources\Icons\speaker.png
+D:\github\Battery-Indicator\publish\Resources\Icons\stylus.png
+D:\github\Battery-Indicator\publish\Resources\Icons\vr.png
+D:\github\Battery-Indicator\publish\Resources\Icons\wheel.png
+D:\github\Battery-Indicator\publish\Battery Indicator.dll
+D:\github\Battery-Indicator\publish\Battery Indicator.deps.json
+D:\github\Battery-Indicator\publish\Battery Indicator.runtimeconfig.json
+D:\github\Battery-Indicator\publish\Battery Indicator.pdb
+D:\github\Battery-Indicator\publish\Microsoft.Windows.SDK.NET.dll
+D:\github\Battery-Indicator\publish\WinRT.Runtime.dll
+D:\github\Battery-Indicator\publish\HidSharp.dll
