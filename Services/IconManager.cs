@@ -179,6 +179,65 @@ public static class IconManager
         g.PixelOffsetMode = oldPixelOffset;
     }
 
+    private static readonly ConcurrentDictionary<string, Image?> _menuIconCache = new();
+
+    /// <summary>
+    /// Gets a high-contrast menu icon of the app logo for context menus.
+    /// </summary>
+    public static Image? GetAppMenuIcon(int size = 18)
+    {
+        string cacheKey = $"APP_MENU_{size}";
+        return _menuIconCache.GetOrAdd(cacheKey, _ =>
+        {
+            var logo = GetAppLogo();
+            if (logo == null) return null;
+
+            var bmp = new Bitmap(size, size);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.DrawImage(logo, new Rectangle(0, 0, size, size));
+            }
+            return bmp;
+        });
+    }
+
+    /// <summary>
+    /// Gets a crisp white silhouette icon of the custom device artwork for context menus.
+    /// </summary>
+    public static Image? GetCustomDeviceMenuIcon(BatteryDeviceInfo device, int size = 18)
+    {
+        string key = $"MENU_{SanitizeFilename(device.Name)}_{size}";
+        return _menuIconCache.GetOrAdd(key, _ =>
+        {
+            var img = GetCustomDeviceImage(device);
+            var bmp = new Bitmap(size, size);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                if (img != null)
+                {
+                    DrawCustomDeviceImage(g, device, new RectangleF(0, 0, size, size));
+                }
+                else
+                {
+                    using var font = new Font("Segoe UI Emoji", 9.5f, FontStyle.Regular);
+                    var rect = new RectangleF(0, 0, size, size);
+                    var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                    g.DrawString(device.DefaultGlyph, font, Brushes.White, rect, sf);
+                }
+            }
+            return bmp;
+        });
+    }
+
     /// <summary>
     /// Gets the custom application logo if available (e.g. app.png).
     /// </summary>

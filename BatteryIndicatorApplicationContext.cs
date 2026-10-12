@@ -56,8 +56,8 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         _contextMenu = new ContextMenuStrip
         {
             Renderer = new ModernFluentMenuRenderer(),
-            Font = new Font("Segoe UI Variable Text", 9f, FontStyle.Regular),
-            ShowImageMargin = false
+            Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Regular),
+            ShowImageMargin = true
         };
         BuildContextMenu();
 
@@ -125,12 +125,17 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
             var menu = new ContextMenuStrip
             {
                 Renderer = new ModernFluentMenuRenderer(),
-                Font = new Font("Segoe UI Variable Text", 9f, FontStyle.Regular),
-                ShowImageMargin = false
+                Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Regular),
+                ShowImageMargin = true
             };
 
-            var titleItem = new ToolStripMenuItem($"{dev.DefaultGlyph} {dev.Name}") { Enabled = false };
-            var statusItem = new ToolStripMenuItem($"Battery: {dev.BatteryDisplay} ({dev.ConnectionDisplay})") { Enabled = false };
+            var titleItem = new ToolStripMenuItem(dev.Name)
+            {
+                Image = IconManager.GetCustomDeviceMenuIcon(dev, 18),
+                Enabled = false,
+                Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Bold)
+            };
+            var statusItem = new ToolStripMenuItem($"{dev.BatteryDisplay}  •  {dev.ConnectionDisplay}") { Enabled = false };
             var unpinItem = new ToolStripMenuItem("✕ Unpin from System Tray");
             unpinItem.Click += (s, e) =>
             {
@@ -183,7 +188,12 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
     {
         _contextMenu.Items.Clear();
 
-        var titleItem = new ToolStripMenuItem("🔋 Battery Indicator") { Enabled = false };
+        var titleItem = new ToolStripMenuItem("Battery Indicator")
+        {
+            Image = IconManager.GetAppMenuIcon(18),
+            Enabled = false,
+            Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Bold)
+        };
         _contextMenu.Items.Add(titleItem);
         _contextMenu.Items.Add(new ToolStripSeparator());
 
@@ -195,9 +205,10 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         {
             foreach (var dev in _currentDevices)
             {
-                string label = $"{dev.DefaultGlyph} {dev.Name}: {dev.BatteryDisplay}";
+                string label = $"{dev.Name}  •  {dev.BatteryDisplay}";
                 var item = new ToolStripMenuItem(label)
                 {
+                    Image = IconManager.GetCustomDeviceMenuIcon(dev, 18),
                     Checked = dev.IsPinnedToTray
                 };
                 item.Click += (s, e) =>
@@ -262,6 +273,20 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         alertMenu.DropDownItems.Add(toggleItem);
 
         _contextMenu.Items.Add(alertMenu);
+
+        // Start with Windows toggle
+        var startupItem = new ToolStripMenuItem("Start with Windows")
+        {
+            Checked = SettingsManager.StartWithWindows
+        };
+        startupItem.Click += (s, e) =>
+        {
+            SettingsManager.StartWithWindows = !SettingsManager.StartWithWindows;
+            BuildContextMenu();
+        };
+        _contextMenu.Items.Add(startupItem);
+
+        _contextMenu.Items.Add(new ToolStripSeparator());
 
         var refreshItem = new ToolStripMenuItem("Refresh");
         refreshItem.Click += async (s, e) => await RefreshDevicesAsync();

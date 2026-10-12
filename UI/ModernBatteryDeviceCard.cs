@@ -11,6 +11,7 @@ namespace BatteryIndicator.UI;
 /// <summary>
 /// A sleek Windows 11 style card where the entire card itself functions as an elegant battery gauge tab.
 /// Includes an interactive Plus (+) / Pin button to pin dedicated circular battery icons to the taskbar system tray.
+/// Features smooth marquee horizontal text scrolling for long device names when hovered.
 /// </summary>
 public class ModernBatteryDeviceCard : Control
 {
@@ -18,6 +19,13 @@ public class ModernBatteryDeviceCard : Control
     private readonly Action<BatteryDeviceInfo>? _onPinToggled;
     private bool _isHovered;
     private bool _isPinHovered;
+
+    // Marquee scrolling for long device names
+    private float _marqueeOffset = 0f;
+    private float _maxScroll = 0f;
+    private int _marqueePauseFrames = 0;
+    private bool _marqueeForward = true;
+    private readonly System.Windows.Forms.Timer _marqueeTimer;
 
     // Cached fonts to avoid GC pressure and ensure ultra-smooth rendering
     private static readonly Font IconFont = new Font("Segoe UI Emoji", 14.5f, FontStyle.Regular);
@@ -43,6 +51,53 @@ public class ModernBatteryDeviceCard : Control
         Margin = new Padding(0, 0, 0, 10);
         BackColor = DarkCanvasBg;
         Cursor = Cursors.Default;
+
+        // Marquee animation timer (25 FPS smooth ticker)
+        _marqueeTimer = new System.Windows.Forms.Timer { Interval = 40 };
+        _marqueeTimer.Tick += OnMarqueeTick;
+    }
+
+    private void OnMarqueeTick(object? sender, EventArgs e)
+    {
+        if (!_isHovered || _maxScroll <= 0)
+        {
+            if (_marqueeOffset != 0)
+            {
+                _marqueeOffset = 0;
+                Invalidate(new Rectangle(54, 12, 185, 26));
+            }
+            _marqueeTimer.Stop();
+            return;
+        }
+
+        if (_marqueePauseFrames > 0)
+        {
+            _marqueePauseFrames--;
+            return;
+        }
+
+        if (_marqueeForward)
+        {
+            _marqueeOffset += 1.2f;
+            if (_marqueeOffset >= _maxScroll)
+            {
+                _marqueeOffset = _maxScroll;
+                _marqueeForward = false;
+                _marqueePauseFrames = 25; // Pause ~1 sec at the end of the text
+            }
+        }
+        else
+        {
+            _marqueeOffset -= 1.8f;
+            if (_marqueeOffset <= 0)
+            {
+                _marqueeOffset = 0;
+                _marqueeForward = true;
+                _marqueePauseFrames = 20; // Pause ~0.8 sec at start
+            }
+        }
+
+        Invalidate(new Rectangle(54, 12, 185, 26));
     }
 
     private RectangleF PinButtonRect => new RectangleF(Width - 38f, (Height - 28f) / 2f, 28f, 28f);
@@ -63,6 +118,11 @@ public class ModernBatteryDeviceCard : Control
     {
         base.OnMouseEnter(e);
         _isHovered = true;
+        if (_maxScroll > 0)
+        {
+            _marqueePauseFrames = 12; // Brief 500ms pause before scrolling
+            _marqueeTimer.Start();
+        }
         Invalidate();
     }
 
@@ -71,6 +131,10 @@ public class ModernBatteryDeviceCard : Control
         base.OnMouseLeave(e);
         _isHovered = false;
         _isPinHovered = false;
+        _marqueeOffset = 0f;
+        _marqueeForward = true;
+        _marqueePauseFrames = 0;
+        _marqueeTimer.Stop();
         Cursor = Cursors.Default;
         Invalidate();
     }
@@ -98,30 +162,30 @@ public class ModernBatteryDeviceCard : Control
 
         float w = Width - 1.5f;
         float h = Height - 1.5f;
-        float radius = 14f; // Smooth modern Windows 11 fillet
-        var fullRect = new RectangleF(0.75f, 0.75f, w, h);
-        using var cardPath = CreateRoundedPath(fullRect, radius);
+        float radius = 10f; // Windows 11 rounded fillet radius
 
-        // 1. Windows 11 Dark Mode Card Base
-        Color baseBg = _isHovered ? Color.FromArgb(42, 42, 42) : Color.FromArgb(32, 32, 32);
-        using (var baseBrush = new SolidBrush(baseBg))
+        var cardRect = new RectangleF(0.5f, 0.5f, w, h);
+        using var cardPath = CreateRoundedPath(cardRect, radius);
+
+        // 1. Dark Acrylic Card Base Background
+        Color baseBg = _isHovered ? Color.FromArgb(38, 38, 38) : Color.FromArgb(29, 29, 29);
+        using (var bgBrush = new SolidBrush(baseBg))
         {
-            g.FillPath(baseBrush, cardPath);
+            g.FillPath(bgBrush, cardPath);
         }
 
-        // 2. Battery gauge fill tab inside the filleted card
-        int percentage = Math.Clamp(_device.BatteryPercentage ?? 0, 0, 100);
-        if (_device.BatteryPercentage.HasValue && percentage > 0)
+        // 2. Battery Percentage Gauge Bar (The entire card itself behaves as the tab progress bar)
+        if (_device.BatteryPercentage.HasValue && _device.IsConnected)
         {
-            // Clip to the filleted card path so the fill never bleeds outside the rounded corners
+            int percentage = Math.Clamp(_device.BatteryPercentage.Value, 0, 100);
+            float fillWidth = (percentage / 100.0f) * w;
+            var fillRect = new RectangleF(0.5f, 0.5f, fillWidth, h);
+
             var oldClip = g.Clip;
-            g.SetClip(cardPath, CombineMode.Intersect);
+            g.SetClip(cardPath);
 
-            float fillWidth = (w * percentage) / 100.0f;
-            if (fillWidth > 0)
+            if (percentage > 0)
             {
-                var fillRect = new RectangleF(0.75f, 0.75f, fillWidth, h);
-
                 Color energyColor;
                 if (percentage <= 15)
                 {
@@ -162,7 +226,7 @@ public class ModernBatteryDeviceCard : Control
         }
 
         // 4. Content Typography & Icons
-        // Custom Image or Glyph Icon
+        // Custom Image or Glyph Icon (Auto-cropped and white silhouette rendered)
         var customIcon = IconManager.GetCustomDeviceImage(_device);
         if (customIcon != null)
         {
@@ -177,12 +241,22 @@ public class ModernBatteryDeviceCard : Control
             g.DrawString(iconText, IconFont, Brushes.White, iconRect, sfIcon);
         }
 
-        // Title: Device Name
+        // Title: Device Name with Smooth Marquee Scrolling for Long Names
         string displayName = _device.Name;
+        float maxTitleWidth = (w - 116f) - 54f - 6f; // Available title horizontal space
+        var titleRect = new RectangleF(54f, 14f, maxTitleWidth, 22f);
+
+        var measuredSize = g.MeasureString(displayName, TitleFont);
+        _maxScroll = Math.Max(0, measuredSize.Width - maxTitleWidth + 6f);
+
+        var prevClip = g.Clip;
+        g.SetClip(titleRect);
+
         using var titleBrush = new SolidBrush(Color.FromArgb(240, 240, 240));
-        var titleRect = new RectangleF(54f, 14f, 172f, 22f);
-        var sfTitle = new StringFormat { Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
-        g.DrawString(displayName, TitleFont, titleBrush, titleRect, sfTitle);
+        float titleDrawX = 54f - (_maxScroll > 0 ? _marqueeOffset : 0f);
+        g.DrawString(displayName, TitleFont, titleBrush, titleDrawX, 14f);
+
+        g.Clip = prevClip;
 
         // Subtitle: Connection type (e.g. "2.4 GHz", "Bluetooth", "Xbox Wireless")
         string connectionText = _device.ConnectionDisplay;
@@ -194,10 +268,11 @@ public class ModernBatteryDeviceCard : Control
             ? $"{_device.BatteryPercentage.Value}%" + (_device.IsCharging ? " ⚡" : "")
             : "— %";
 
+        int curPct = _device.BatteryPercentage ?? 0;
         Color pctColor = !_device.BatteryPercentage.HasValue
             ? Color.FromArgb(140, 140, 140)
-            : percentage <= 15 ? Color.FromArgb(245, 100, 100)
-            : percentage <= 30 ? Color.FromArgb(250, 175, 70)
+            : curPct <= 15 ? Color.FromArgb(245, 100, 100)
+            : curPct <= 30 ? Color.FromArgb(250, 175, 70)
             : Color.FromArgb(70, 225, 165);
 
         using var pctBrush = new SolidBrush(pctColor);
@@ -243,5 +318,15 @@ public class ModernBatteryDeviceCard : Control
         path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
         path.CloseFigure();
         return path;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _marqueeTimer.Stop();
+            _marqueeTimer.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

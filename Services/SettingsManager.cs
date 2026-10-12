@@ -8,6 +8,7 @@ public class AppSettings
 {
     public int LowBatteryThreshold { get; set; } = 20;
     public bool LowBatteryAlertsEnabled { get; set; } = true;
+    public bool StartWithWindows { get; set; } = false;
 }
 
 /// <summary>
@@ -39,6 +40,17 @@ public static class SettingsManager
         set
         {
             _currentSettings.LowBatteryAlertsEnabled = value;
+            Save();
+        }
+    }
+
+    public static bool StartWithWindows
+    {
+        get => StartupManager.IsStartupEnabled();
+        set
+        {
+            _currentSettings.StartWithWindows = value;
+            StartupManager.SetStartup(value);
             Save();
         }
     }

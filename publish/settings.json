@@ -1,4 +1,5 @@
 {
   "LowBatteryThreshold": 20,
-  "LowBatteryAlertsEnabled": true
+  "LowBatteryAlertsEnabled": true,
+  "StartWithWindows": true
 }
