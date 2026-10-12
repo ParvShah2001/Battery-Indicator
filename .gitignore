@@ -20,3 +20,11 @@ x86/
 
 ## User Settings / Local Logs
 crash.log
+
+## Packaging Artifacts
+*.msix
+*.appx
+*.msixupload
+*.appxupload
+Packaging/msix_staging/
+Output/

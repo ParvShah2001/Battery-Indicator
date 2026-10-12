@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="HidSharp" Version="2.6.4" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
   </ItemGroup>
 
   <ItemGroup>

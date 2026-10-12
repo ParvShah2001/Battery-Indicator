@@ -16,11 +16,18 @@ public class AppSettings
 /// </summary>
 public static class SettingsManager
 {
-    private static readonly string SettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+    private static readonly string AppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator");
+    private static readonly string SettingsFile = Path.Combine(AppDataDir, "settings.json");
+    private static readonly string LegacySettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
     private static AppSettings _currentSettings = new();
 
     static SettingsManager()
     {
+        try
+        {
+            if (!Directory.Exists(AppDataDir)) Directory.CreateDirectory(AppDataDir);
+        }
+        catch { }
         Load();
     }
 
@@ -59,6 +66,14 @@ public static class SettingsManager
     {
         try
         {
+            if (!Directory.Exists(AppDataDir)) Directory.CreateDirectory(AppDataDir);
+
+            // Automatically migrate from legacy base directory if present
+            if (!File.Exists(SettingsFile) && File.Exists(LegacySettingsFile))
+            {
+                try { File.Copy(LegacySettingsFile, SettingsFile, true); } catch { }
+            }
+
             if (File.Exists(SettingsFile))
             {
                 string json = File.ReadAllText(SettingsFile);

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap rescap desktop">
+
+  <Identity
+    Name="ParvShah.BatteryIndicatorforWindows"
+    ProcessorArchitecture="x64"
+    Publisher="CN=16FF1D7F-5899-4815-84D3-1B39240C13CD"
+    Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>Battery Indicator for Windows</DisplayName>
+    <PublisherDisplayName>Parv Shah</PublisherDisplayName>
+    <Logo>StoreAssets\StoreLogo.png</Logo>
+    <Description>Native Windows 11 taskbar battery monitor for 2.4GHz Wireless Dongle mice, keyboards, Bluetooth TWS earbuds, Android phones &amp; gamepads with multi-device system tray pinning.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application
+      Id="BatteryIndicator"
+      Executable="Battery Indicator.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Battery Indicator"
+        Description="Windows 11 Native Taskbar Battery Monitor for 2.4GHz Dongles and Bluetooth Devices"
+        BackgroundColor="#181818"
+        Square150x150Logo="StoreAssets\Square150x150Logo.png"
+        Square44x44Logo="StoreAssets\Square44x44Logo.png">
+        <uap:DefaultTile Square71x71Logo="StoreAssets\Square44x44Logo.png" />
+        <uap:SplashScreen Image="StoreAssets\SplashScreen.png" BackgroundColor="#181818" />
+      </uap:VisualElements>
+      <Extensions>
+        <desktop:Extension Category="windows.startupTask" Executable="Battery Indicator.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="BatteryIndicatorStartup" Enabled="true" DisplayName="Battery Indicator" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

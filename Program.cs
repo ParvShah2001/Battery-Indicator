@@ -16,7 +16,13 @@ static class Program
         }
         catch (Exception ex)
         {
-            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), ex.ToString());
+            try
+            {
+                string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator");
+                if (!Directory.Exists(appData)) Directory.CreateDirectory(appData);
+                File.WriteAllText(Path.Combine(appData, "crash.log"), ex.ToString());
+            }
+            catch { }
             MessageBox.Show(ex.ToString(), "Battery Indicator Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }    
