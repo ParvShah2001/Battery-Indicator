@@ -189,6 +189,12 @@ Contributions are warmly welcome! If you have a wireless dongle device or Blueto
 
 ---
 
+## 🔒 Privacy Policy
+
+Battery Indicator respects your privacy. The application is completely offline, zero-telemetry, and does not collect or transmit any personal or hardware data. For complete details, see our [Privacy Policy](PRIVACY.md).
+
+---
+
 ## 📄 License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
