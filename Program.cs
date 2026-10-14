@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using BatteryIndicator.Services;
 
 namespace BatteryIndicator;
 
@@ -9,6 +10,9 @@ static class Program
     [STAThread]
     static void Main()
     {
+        // Initialize Telemetry-Free Local Crash Reporting
+        CrashReporter.Initialize();
+
         try
         {
             ApplicationConfiguration.Initialize();
@@ -16,14 +20,7 @@ static class Program
         }
         catch (Exception ex)
         {
-            try
-            {
-                string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator");
-                if (!Directory.Exists(appData)) Directory.CreateDirectory(appData);
-                File.WriteAllText(Path.Combine(appData, "crash.log"), ex.ToString());
-            }
-            catch { }
-            MessageBox.Show(ex.ToString(), "Battery Indicator Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            CrashReporter.LogCrash(ex, "Main Process Unhandled Exception", isFatal: true);
         }
     }    
 }

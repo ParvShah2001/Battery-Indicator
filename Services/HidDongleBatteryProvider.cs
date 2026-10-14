@@ -42,6 +42,20 @@ public class HidDongleBatteryProvider : IDeviceBatteryProvider
 
             try
             {
+                // 0. Crowdsourced Device Profiles (Plugin / JSON Database)
+                string? firstProd = group.Select(d => { try { return d.GetProductName(); } catch { return null; } }).FirstOrDefault(s => !string.IsNullOrWhiteSpace(s));
+                string? devPath = group.FirstOrDefault()?.DevicePath;
+                var matchedProfile = DeviceProfileManager.Match(vid, pid, firstProd, devPath);
+                if (matchedProfile != null)
+                {
+                    var devInfo = DeviceProfileManager.ExecuteProfileQuery(matchedProfile, group.ToList());
+                    if (devInfo != null)
+                    {
+                        result.Add(devInfo);
+                        continue;
+                    }
+                }
+
                 // 1. ATK / VXE / Compx mice (VID 0x373B, 0x3554)
                 if (vid == 0x373B || vid == 0x3554)
                 {
@@ -119,7 +133,29 @@ public class HidDongleBatteryProvider : IDeviceBatteryProvider
                     }
                 }
 
-                // 7. Drawing Tablet Styluses / Digitizers (Wacom, Huion, XP-Pen)
+                // 7. Mechanical Wireless Keyboards (Keychron: 0x3434, NuPhy: 0x05AC / 0x3554, Epomaker: 0x3151, Akko: 0x0C45)
+                if (vid == 0x3434 || vid == 0x3151 || vid == 0x0C45 || vid == 0x1A40)
+                {
+                    var kbDev = PollWirelessMechanicalKeyboard(group.ToList());
+                    if (kbDev != null)
+                    {
+                        result.Add(kbDev);
+                        continue;
+                    }
+                }
+
+                // 8. USB-Connected UPS Battery Backup (APC: 0x051D, CyberPower: 0x0764)
+                if (vid == 0x051D || vid == 0x0764)
+                {
+                    var upsDev = PollUsbConnectedUps(group.ToList());
+                    if (upsDev != null)
+                    {
+                        result.Add(upsDev);
+                        continue;
+                    }
+                }
+
+                // 9. Drawing Tablet Styluses / Digitizers (Wacom, Huion, XP-Pen)
                 var stylusDev = PollDigitizerStylus(group.ToList());
                 if (stylusDev != null)
                 {
@@ -127,11 +163,19 @@ public class HidDongleBatteryProvider : IDeviceBatteryProvider
                     continue;
                 }
 
-                // 8. Universal fallback: Check HID standard power device collection (Usage Page 0x84)
+                // 10. Universal fallback: Check HID standard power device collection (Usage Page 0x84)
                 var standardDev = PollStandardHidPower(group.ToList());
                 if (standardDev != null)
                 {
                     result.Add(standardDev);
+                    continue;
+                }
+
+                // 11. Universal Heuristic Prober for unknown 2.4GHz USB Dongles
+                var heuristicDev = ProbeHeuristicBatteryDongle(group.ToList());
+                if (heuristicDev != null)
+                {
+                    result.Add(heuristicDev);
                 }
             }
             catch (Exception ex)
@@ -621,6 +665,146 @@ public class HidDongleBatteryProvider : IDeviceBatteryProvider
                                 IsConnected = true
                             };
                         }
+                    }
+                }
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private BatteryDeviceInfo? PollWirelessMechanicalKeyboard(List<HidDevice> endpoints)
+    {
+        // Keychron (0x3434), NuPhy, Epomaker, Akko feature report battery query
+        foreach (var ep in endpoints)
+        {
+            try
+            {
+                if (ep.GetMaxFeatureReportLength() >= 4 && ep.TryOpen(out var stream))
+                {
+                    using (stream)
+                    {
+                        stream.ReadTimeout = 300;
+                        byte[] req = new byte[ep.GetMaxFeatureReportLength()];
+                        // Standard VIA/QMK battery probe or vendor query
+                        req[0] = 0x07; // Report ID 7
+                        req[1] = 0x02; // Battery query command
+                        try
+                        {
+                            stream.GetFeature(req);
+                            if (req.Length >= 3 && req[1] > 0 && req[1] <= 100)
+                            {
+                                string name = ep.GetProductName() ?? "Wireless Mechanical Keyboard";
+                                var dev = new BatteryDeviceInfo
+                                {
+                                    Id = $"HID_MECH_{ep.VendorID:X4}_{ep.ProductID:X4}",
+                                    Name = name,
+                                    Category = DeviceCategory.Keyboard,
+                                    ConnectionType = DeviceConnectionType.Wireless24G,
+                                    BatteryPercentage = req[1],
+                                    IsCharging = req.Length > 3 && req[2] != 0,
+                                    IsConnected = true
+                                };
+                                _deviceCache[dev.Id] = dev;
+                                return dev;
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private BatteryDeviceInfo? PollUsbConnectedUps(List<HidDevice> endpoints)
+    {
+        // APC (0x051D), CyberPower (0x0764)
+        foreach (var ep in endpoints)
+        {
+            try
+            {
+                if (ep.GetMaxFeatureReportLength() > 0 && ep.TryOpen(out var stream))
+                {
+                    using (stream)
+                    {
+                        stream.ReadTimeout = 400;
+                        byte[] buf = new byte[ep.GetMaxFeatureReportLength()];
+                        stream.GetFeature(buf);
+                        // Standard USB HID Power Device usage (Capacity % at index 1 or 2)
+                        for (int i = 1; i < Math.Min(buf.Length, 6); i++)
+                        {
+                            if (buf[i] > 0 && buf[i] <= 100)
+                            {
+                                string name = ep.GetProductName() ?? (ep.VendorID == 0x051D ? "APC Back-UPS" : "CyberPower UPS");
+                                var dev = new BatteryDeviceInfo
+                                {
+                                    Id = $"HID_UPS_{ep.VendorID:X4}_{ep.ProductID:X4}",
+                                    Name = name,
+                                    Category = DeviceCategory.Ups,
+                                    ConnectionType = DeviceConnectionType.UsbWired,
+                                    BatteryPercentage = buf[i],
+                                    IsCharging = buf.Length > i + 1 && (buf[i + 1] & 0x01) != 0,
+                                    IsConnected = true
+                                };
+                                _deviceCache[dev.Id] = dev;
+                                return dev;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private BatteryDeviceInfo? ProbeHeuristicBatteryDongle(List<HidDevice> endpoints)
+    {
+        // Universal Heuristic Prober: Scans feature reports for valid battery % values
+        // for generic 2.4GHz USB wireless dongles
+        foreach (var ep in endpoints)
+        {
+            try
+            {
+                int len = ep.GetMaxFeatureReportLength();
+                if (len >= 2 && len <= 128 && ep.TryOpen(out var stream))
+                {
+                    using (stream)
+                    {
+                        stream.ReadTimeout = 200;
+                        byte[] buf = new byte[len];
+                        try
+                        {
+                            stream.GetFeature(buf);
+                            // Heuristic scan: look for byte in range [1..100]
+                            if (buf.Length >= 2)
+                            {
+                                int val = buf[1];
+                                if (val >= 5 && val <= 100)
+                                {
+                                    string? prod = ep.GetProductName();
+                                    if (!string.IsNullOrWhiteSpace(prod) && 
+                                        !prod.Contains("System", StringComparison.OrdinalIgnoreCase) &&
+                                        !prod.Contains("Consumer", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        var dev = new BatteryDeviceInfo
+                                        {
+                                            Id = $"HID_HEURISTIC_{ep.VendorID:X4}_{ep.ProductID:X4}",
+                                            Name = prod,
+                                            Category = BatteryDeviceInfo.InferCategory(prod, DeviceConnectionType.Wireless24G),
+                                            ConnectionType = DeviceConnectionType.Wireless24G,
+                                            BatteryPercentage = val,
+                                            IsConnected = true
+                                        };
+                                        _deviceCache[dev.Id] = dev;
+                                        return dev;
+                                    }
+                                }
+                            }
+                        }
+                        catch { }
                     }
                 }
             }

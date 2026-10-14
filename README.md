@@ -5,16 +5,16 @@
 </p>
 
 <p align="center">
-  <strong>Native Windows 11 taskbar battery monitor for 2.4GHz Wireless Dongles, Bluetooth devices, Android phones, and Gamepads.</strong>
+  <strong>Native Windows 11 taskbar battery monitor for 2.4GHz Wireless Dongles, Bluetooth devices, TWS Earbuds, Mechanical Keyboards, Gamepads, and UPS.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Windows%2010-0078D4?logo=windows&logoColor=white" alt="Platform" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Windows%2010-0078D4?logo=windows&logoColor=white" alt="Platform" /></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 9.0" /></a>
-  <a href="https://github.com"><img src="https://img.shields.io/badge/Language-C%23-239120?logo=csharp&logoColor=white" alt="C#" /></a>
-  <a href="https://github.com"><img src="https://img.shields.io/badge/License-MIT-green" alt="License" /></a>
-  <a href="https://github.com"><img src="https://img.shields.io/badge/Release-v1.0.0-blue" alt="Release" /></a>
-  <a href="https://github.com"><img src="https://img.shields.io/badge/Architecture-x64-orange" alt="Architecture" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator"><img src="https://img.shields.io/badge/Language-C%23-239120?logo=csharp&logoColor=white" alt="C#" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator/releases"><img src="https://img.shields.io/badge/Release-v1.2.0-blue" alt="Release" /></a>
+  <a href="https://github.com/microsoft/winget-pkgs"><img src="https://img.shields.io/badge/WinGet-ParvShah.BatteryIndicator-blueviolet?logo=windows-terminal" alt="WinGet" /></a>
 </p>
 
 <p align="center">
@@ -25,43 +25,43 @@
 
 ## 📌 Why Battery Indicator?
 
-Windows has a major blind spot: **it cannot show the battery percentage of 2.4GHz wireless USB dongle mice, keyboards, or Android smartphones in the taskbar system tray**. Manufacturers force you to keep heavy, resource-hungry proprietary bloatware running (Razer Synapse, Logitech G HUB, etc.) just to see if your mouse or keyboard is about to die.
+Windows has a notorious blind spot: **it cannot show the battery percentage of 2.4GHz wireless USB dongle mice, mechanical keyboards, gaming controllers, or TWS earbuds directly in your taskbar system tray**. Manufacturers force you to keep heavy, resource-hungry proprietary bloatware running (Razer Synapse, Logitech G HUB, etc.) just to check if your peripheral is about to die mid-game or mid-work.
 
-**Battery Indicator** solves this with a lightweight, native, bloat-free Windows 11 application that queries battery telemetry directly from hardware protocols and displays them right beside your Windows clock.
+**Battery Indicator** solves this with an ultra-lightweight, native, bloat-free Windows 11 utility that queries battery telemetry directly from low-level HID/SPP/GATT protocols and displays them right beside your Windows clock.
 
 ---
 
 ## ✨ Key Features
 
-- **🔘 Multi-Device Taskbar Pinning (`+` Pin Button)**
-  - Click the **`+`** button on any device card to pin a dedicated, independent circular battery gauge to your system tray.
-  - Features an active color-coded circular progress ring (**Emerald Green** $>30\%$, **Amber Orange** $16\text{--}30\%$, **Crimson Red** $\le 15\%$) with the device's icon in the center and a live charging bolt badge.
-  - Pin as many devices as you want simultaneously! Each pinned tray icon has its own quick context menu.
+- **🔘 Dedicated System Tray Battery Gauges (`+` Pin Button)**
+  - Click the **`+`** button on any device card to pin an independent, live circular battery gauge directly to your system tray.
+  - Color-coded circular gauge (**Emerald Green** $>30\%$, **Amber Orange** $16\text{--}30\%$, **Crimson Red** $\le 15\%$) with the device's custom silhouette in the center and a live charging bolt badge.
+  - Pin multiple devices simultaneously! Each pinned tray icon has its own quick context menu.
 - **⚡ 2.4GHz USB Wireless Dongle Telemetry**
-  - **ATK / VXE / Compx:** Reverse-engineered 17-byte HID vendor report protocol (`0x07` command frame).
-  - **Logitech:** HID++ 2.0 / 1.0 unified battery feature reports across Lightspeed & Unifying receivers.
-  - **Razer:** Hyperspeed 2.4GHz battery status query.
-  - **Portronics & Areson:** Composite 2.4GHz wireless mechanical keyboards (e.g. Portronics Hydra 10).
-  - **Corsair & SteelSeries:** Slipstream and custom wireless dongle support.
-- **📱 Android Smartphone Telemetry (Pixel, Galaxy, OnePlus, etc.)**
-  - Integrates seamlessly with Windows Phone Link / Link to Windows live companion telemetry cache, showing your phone's live battery status (e.g. **Google Pixel 7**, Samsung Galaxy).
-- **🎧 Proprietary Bluetooth TWS & Headset Support**
-  - **OnePlus / Oppo / Realme:** Authenticated SPP RFCOMM handshake (Service UUID `0000079A`) for Nord Buds 3r, Buds Pro 2, Enco, and HeyMelody earbuds.
-  - **Sony & Pixel Buds:** Companion Bluetooth telemetry for WH-1000XM4/XM5, WF-1000XM4/XM5, and Pixel Buds.
-  - **Apple AirPods & Beats:** Live battery reporting on Windows.
-  - **Standard Bluetooth LE:** Universal GATT Battery Service (`0x180F` / `0x2A19`).
-- **🎮 Wireless Gamepads & Controllers**
-  - Native integration with Xbox Wireless Controllers (Series X|S, One, Elite via `Windows.Gaming.Input`), PlayStation DualSense (PS5) & DualShock 4 (PS4), Nintendo Switch Pro, and 8BitDo wireless gamepads.
-- **⚠️ Smart Low Battery Alerts (Configurable)**
-  - Native Windows notifications when any connected device drops to or below a configurable threshold (**default: 20%**, customizable from 5% to 50% via dark-mode modal).
-  - Smart cooldown safeguard: triggers once per discharge cycle to prevent spam.
+  - **Gaming Mice:** Logitech Lightspeed & Unifying (HID++ 2.0/1.0), Razer HyperSpeed, ATK / VXE / Compx (`0x07` frame), Corsair Slipstream, SteelSeries Aerox, Glorious.
+  - **Mechanical Keyboards:** Keychron (K-Pro, Q-Max, V-Max), NuPhy (Air/Halo), Akko, Epomaker, Portronics Hydra 10, Areson wireless receivers.
+- **🎧 True Wireless Stereo (TWS) Dual-Bud Support**
+  - Independent **Left (`L`)** and **Right (`R`)** battery percentages with explicit connection mode tagging (e.g. `Bluetooth  •  L: 85%   R: 90%`).
+  - Supports OnePlus Nord Buds 3r, Buds Pro 2, Oppo Enco, Realme, Sony WF-1000XM4/XM5, and Apple AirPods.
+- **🔌 Uninterruptible Power Supply (UPS) Telemetry**
+  - Live battery monitoring for APC, CyberPower, and standard HID Power Device UPS backup systems.
+- **🧩 Crowdsourced Device Profiles (Plugin / JSON Database)**
+  - Zero-code device expansion! Community members can add support for any peripheral by dropping a JSON profile into `%APPDATA%\BatteryIndicator\Profiles\` without recompiling the application.
+- **⌨️ Customizable Global Summon Shortcut**
+  - Instant flyout popup from anywhere via keyboard shortcut (**Default: `Win + Alt + B`**).
+  - Fully customizable to any keybind combination (Ctrl, Alt, Shift, Win + Key) via interactive Settings UI.
+- **✏️ Device Aliases & Hidden Devices**
+  - Right-click any device card to rename it with a custom nickname or hide unwanted secondary devices.
+  - Unhide all devices in one click from the tray settings menu.
+- **🛡️ Telemetry-Free, Local-Only Crash Reporting**
+  - **Zero Telemetry Guarantee:** 100% offline. No analytics, tracking, or personal data transmitted to any external server.
+  - When an unexpected error occurs, sanitized diagnostic logs (with all personal paths and usernames redacted) are stored strictly on your local disk in `%APPDATA%\BatteryIndicator\CrashReports\`.
+- **⚠️ Smart Low Battery Alerts**
+  - Native Windows notifications when any peripheral reaches a configurable threshold (**default: <20%**, customizable from 5% to 50%).
+  - Cooldown safeguard prevents notification spam.
 - **🎨 Windows 11 Fluent Dark UI**
-  - Zero scrollbars and zero horizontal scrolling.
-  - Dynamic bottom chevron indicator (`˅`) appearing dynamically when more devices are below view.
-  - Smooth mouse-wheel scrolling and click-to-scroll navigation.
-  - Razor-sharp ClearType typography with zero jitter on hover.
-- **🖼️ 100% Customizable Icons**
-  - Drop your own `.png` or `.ico` files in `Resources\Icons\` and the app automatically auto-crops whitespace, aspect-fits, and renders crisp white silhouettes on the dark circular gauges.
+  - Multi-line word wrapping cleanly adapts to long peripheral names (e.g. *OnePlus Nord Buds 3r*) without marquee jitter.
+  - Native Windows 11 Mica dark background, ClearType typography, and bulletproof cascading context menus.
 
 ---
 
@@ -71,52 +71,80 @@ Windows has a major blind spot: **it cannot show the battery percentage of 2.4GH
 ┌──────────────────────────────────────────────┐
 │  🔋 Battery Indicator              [Refresh]  │
 ├──────────────────────────────────────────────┤
-│  [🖱️] ATK VXE R1                      85% [+] │
+│  [🖱️] Logitech G PRO X Superlight     85% [+] │
 │      2.4 GHz                                 │
 ├──────────────────────────────────────────────┤
-│  [📱] Pixel 7                         46% [✓] │
-│      Bluetooth                               │
-├──────────────────────────────────────────────┤
-│  [🎵] OnePlus Nord Buds 3r            90% [+] │
-│      Bluetooth                               │
-├──────────────────────────────────────────────┤
-│  [⌨️] Portronics Hydra 10             100% [+] │
+│  [⌨️] Keychron K2 Pro                  92% [+] │
 │      2.4 GHz                                 │
 ├──────────────────────────────────────────────┤
-│                     ˅                        │
+│  [🎵] OnePlus Nord Buds 3r                    │
+│      Bluetooth  •  L: 85%   R: 90%   85% [✓] │
 ├──────────────────────────────────────────────┤
-│  Last updated - 03:45 PM         Devices - 4 │
+│  [🎮] Xbox Wireless Controller        65% [+] │
+│      Xbox Wireless                           │
+├──────────────────────────────────────────────┤
+│  [🔋] CyberPower CP1500PFCLCD         100% [+]│
+│      USB / Wired                             │
+├──────────────────────────────────────────────┤
+│  Last updated - 01:00 PM         Devices - 5 │
 └──────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 Supported Hardware & Protocols
+## 📦 Installation & Distribution
 
-| Category | Brands & Devices | Protocol / Mechanism | Connection |
-| :--- | :--- | :--- | :--- |
-| **Wireless Mice** | ATK / VXE (R1, Dragonfly, F1), Logitech (G Pro, G502, Superlight), Razer (DeathAdder, Viper, Basilisk) | Compx 17-byte HID / Logitech HID++ 2.0 / Razer Feature Reports | 2.4 GHz Dongle |
-| **Wireless Keyboards** | Portronics Hydra 10, Keychron, Logitech G915 / MX Keys, Razer BlackWidow, Areson dongles | Areson HID Feature Report / Logitech HID++ / GATT | 2.4 GHz / Bluetooth |
-| **TWS Earbuds** | OnePlus Nord Buds 3r, OnePlus Buds Pro 2, Oppo Enco, Realme Buds | HeyMelody Authenticated SPP RFCOMM (UUID `0000079A`) | Bluetooth |
-| **Headphones** | Sony WH-1000XM4/XM5, Apple AirPods Max, Bose QC, SteelSeries Arctis | Bluetooth LE GATT Battery Service (`0x180F`) / Handsfree Telemetry | Bluetooth / 2.4 GHz |
-| **Smartphones** | Google Pixel (Pixel 7, 8, 9), Samsung Galaxy, OnePlus | Windows Phone Link Start Menu Companion Telemetry | Phone Link / Bluetooth |
-| **Gamepads** | Xbox Wireless (Series X\|S, One, Elite), PS5 DualSense, PS4 DualShock, 8BitDo, Switch Pro | Windows.Gaming.Input / HID Input Report 0x11 / DirectInput | Xbox Wireless / BT / Dongle |
-| **Speakers** | JBL, Soundcore, Bose, UE Boom, Marshall | BLE GATT Battery Service (`0x180F`) | Bluetooth |
-| **Stylus / Tablet** | Microsoft Surface Pen, Wacom, Huion, Apple Pencil (via companion) | Digitizer HID Battery Report / BLE GATT | Bluetooth / RF |
+### Option 1: Install via Windows Package Manager (WinGet)
+```powershell
+winget install ParvShah.BatteryIndicator
+```
+
+### Option 2: Install via Scoop
+```powershell
+scoop bucket add extras
+scoop install battery-indicator
+```
+
+### Option 3: Pre-built Portable Binary
+1. Download the latest release archive from [GitHub Releases](https://github.com/ParvShah2001/Battery-Indicator/releases).
+2. Extract the folder and run **`Battery Indicator.exe`**.
+3. The app will launch silently into your taskbar system tray.
+
+### Option 4: Build MSIX Package
+To package your own signed MSIX installer:
+```powershell
+powershell -ExecutionPolicy Bypass -File "Packaging\build-msix.ps1"
+```
 
 ---
 
-## 🚀 Getting Started
+## 🧩 Crowdsourced Device Profiles
 
-### Option 1: Download Pre-built Release (Recommended)
-1. Download the latest release from the [Releases](https://github.com) section.
-2. Extract the folder and double-click **`Battery Indicator.exe`**.
-3. The app will immediately appear in your Windows system tray.
+Battery Indicator features a plugin-based JSON profile architecture. You can easily add support for any wireless mouse, mechanical keyboard, or dongle without modifying C# code:
 
-### Option 2: Run at Windows Startup
-1. Press `Win + R`, type `shell:startup`, and press Enter.
-2. Right-click **`Battery Indicator.exe`** $\rightarrow$ **Create shortcut**.
-3. Drag the shortcut into your Startup folder.
+1. Open the tray context menu $\rightarrow$ **⚙️ Settings** $\rightarrow$ **📂 Custom Device Profiles Folder...**
+2. Create a new `.json` file (e.g. `my_keyboard.json`):
+```json
+{
+  "id": "custom_wireless_keyboard",
+  "name": "Custom Wireless Keyboard",
+  "vendor": "MyBrand",
+  "category": "Keyboard",
+  "connectionType": "Wireless24G",
+  "vid": 13364,
+  "nameContains": "MyBrand",
+  "protocol": "HidFeatureReport",
+  "reportId": 7,
+  "reportLength": 64,
+  "batteryByteOffset": 1,
+  "chargingByteOffset": 2,
+  "chargingBitMask": 1,
+  "minRawValue": 0,
+  "maxRawValue": 100,
+  "customIcon": "keyboard.png"
+}
+```
+3. Refresh devices $\rightarrow$ Battery Indicator will immediately detect and query your peripheral!
 
 ---
 
@@ -129,72 +157,55 @@ Windows has a major blind spot: **it cannot show the battery percentage of 2.4GH
 ### Build & Run:
 ```powershell
 # Clone the repository
-git clone https://github.com/yourusername/Battery-Indicator.git
+git clone https://github.com/ParvShah2001/Battery-Indicator.git
 cd Battery-Indicator
 
 # Build and run
 dotnet run
 ```
 
-### Publish Portable Single-Folder Distribution:
+### Publish Single-Folder Release:
 ```powershell
 dotnet publish -c Release -r win-x64 --self-contained false -o publish
 ```
-The production binaries will be ready in the `publish\` directory.
 
 ---
 
 ## 🎨 Custom Icons Guide
 
-Place custom `.png` or `.ico` files in [`Resources\Icons\`](file:///d:/github/Battery-Indicator/Resources/Icons) to customize the visual appearance:
+Place custom transparent `.png` or `.ico` files in `Resources\Icons\` (or `%APPDATA%\BatteryIndicator\Icons\`) to customize device silhouettes:
 
 | Filename | Purpose | Recommended Resolution |
 | :--- | :--- | :--- |
-| `app.png` or `app.ico` | Application Logo & Master System Tray Icon | 500x500 PNG / Multi-res ICO |
-| `mouse.png` | All wireless mice | 512x512 Transparent PNG |
-| `keyboard.png` | All wireless keyboards | 512x512 Transparent PNG |
-| `earbuds.png` | In-ear TWS earbuds | 512x512 Transparent PNG |
-| `headphones.png` | Over-ear headphones & headsets | 512x512 Transparent PNG |
-| `gamepad.png` | Controllers & gamepads | 512x512 Transparent PNG |
-| `phone.png` | Smartphones & tablets | 512x512 Transparent PNG |
-| `speaker.png` | Bluetooth speakers | 512x512 Transparent PNG |
-| `stylus.png` | Drawing pens & styluses | 512x512 Transparent PNG |
-| `wheel.png` | Racing wheels & flight sticks | 512x512 Transparent PNG |
-| `vr.png` | VR controllers & headsets | 512x512 Transparent PNG |
-
-*Tip: You can also name icons after specific device names (e.g. `atk_vxe_r1.png`, `pixel_7.png`) for per-device customization!*
+| `app.png` or `app.ico` | Main App Logo & Master Tray Icon | 500x500 PNG / Multi-res ICO |
+| `mouse.png` | Wireless gaming mice | 512x512 Transparent PNG |
+| `keyboard.png` | Wireless mechanical keyboards | 512x512 Transparent PNG |
+| `earbuds.png` | TWS In-ear buds | 512x512 Transparent PNG |
+| `headphones.png` | Over-ear headsets | 512x512 Transparent PNG |
+| `gamepad.png` | Wireless controllers | 512x512 Transparent PNG |
+| `ups.png` | Uninterruptible power supplies | 512x512 Transparent PNG |
+| `phone.png` | Smartphones & companion devices | 512x512 Transparent PNG |
 
 ---
 
-## ⚙️ Configuration (`settings.json`)
+## 🔒 Privacy & Telemetry Policy
 
-Settings are stored automatically in `settings.json`:
-```json
-{
-  "LowBatteryThreshold": 20,
-  "LowBatteryAlertsEnabled": true
-}
-```
-You can configure thresholds directly from the system tray:
-- Right-click tray icon $\rightarrow$ **⚠️ Low Battery Alert (<X%)** $\rightarrow$ Choose preset or enter custom percentage.
+Battery Indicator is strictly **100% Telemetry-Free**:
+- Completely offline execution.
+- No network requests, tracking analytics, or telemetry sent to any server.
+- All crash logs are stored strictly on your local disk with usernames and personal file paths redacted.
+- For full details, review our [Privacy Policy](PRIVACY.md).
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing & Community Profiles
 
-Contributions are warmly welcome! If you have a wireless dongle device or Bluetooth protocol not yet supported:
-1. Fork the repo and create a new feature branch (`git checkout -b feature/NewDeviceSupport`).
-2. Add the vendor ID / protocol parsing in [`Services/`](Services/).
-3. Submit a Pull Request.
-
----
-
-## 🔒 Privacy Policy
-
-Battery Indicator respects your privacy. The application is completely offline, zero-telemetry, and does not collect or transmit any personal or hardware data. For complete details, see our [Privacy Policy](PRIVACY.md).
+Contributions, device profile submissions, and bug reports are warmly welcome!
+- **Bug Reports & Feature Requests:** [GitHub Issues](https://github.com/ParvShah2001/Battery-Indicator/issues)
+- **Submit Device Profiles:** Open a Pull Request adding your JSON profile to `Resources/device_profiles.json`.
 
 ---
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.

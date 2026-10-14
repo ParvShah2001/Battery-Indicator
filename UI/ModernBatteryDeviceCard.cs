@@ -20,25 +20,21 @@ public class ModernBatteryDeviceCard : Control
     private bool _isHovered;
     private bool _isPinHovered;
 
-    // Marquee scrolling for long device names
-    private float _marqueeOffset = 0f;
-    private float _maxScroll = 0f;
-    private int _marqueePauseFrames = 0;
-    private bool _marqueeForward = true;
-    private readonly System.Windows.Forms.Timer _marqueeTimer;
-
     // Cached fonts to avoid GC pressure and ensure ultra-smooth rendering
     private static readonly Font IconFont = new Font("Segoe UI Emoji", 14.5f, FontStyle.Regular);
-    private static readonly Font TitleFont = new Font("Segoe UI Variable Display", 11f, FontStyle.Bold);
+    private static readonly Font TitleFont = new Font("Segoe UI Variable Display", 10.5f, FontStyle.Bold);
     private static readonly Font SubFont = new Font("Segoe UI Variable Small", 9f, FontStyle.Regular);
     private static readonly Font PctFont = new Font("Segoe UI Variable Display", 14f, FontStyle.Bold);
 
     private static readonly Color DarkCanvasBg = Color.FromArgb(24, 24, 24);
 
-    public ModernBatteryDeviceCard(BatteryDeviceInfo device, Action<BatteryDeviceInfo>? onPinToggled = null)
+    private readonly Action? _onCardChanged;
+
+    public ModernBatteryDeviceCard(BatteryDeviceInfo device, Action<BatteryDeviceInfo>? onPinToggled = null, Action? onCardChanged = null)
     {
         _device = device;
         _onPinToggled = onPinToggled;
+        _onCardChanged = onCardChanged;
         SetStyle(
             ControlStyles.UserPaint |
             ControlStyles.AllPaintingInWmPaint |
@@ -46,61 +42,163 @@ public class ModernBatteryDeviceCard : Control
             ControlStyles.ResizeRedraw,
             true
         );
-        Height = 68;
+
+        // Check if device display name requires multi-line wrapping
+        string displayName = SettingsManager.GetDeviceName(_device.Id, _device.Name);
+        using var tempBmp = new Bitmap(1, 1);
+        using var tempG = Graphics.FromImage(tempBmp);
+        float availableWidth = 196f; // Roomy horizontal space for title
+        var unconstrained = tempG.MeasureString(displayName, TitleFont);
+        bool isMultiLine = unconstrained.Width > availableWidth;
+
+        Height = isMultiLine ? 82 : 68;
         Width = 356;
         Margin = new Padding(0, 0, 0, 10);
         BackColor = DarkCanvasBg;
         Cursor = Cursors.Default;
 
-        // Marquee animation timer (25 FPS smooth ticker)
-        _marqueeTimer = new System.Windows.Forms.Timer { Interval = 40 };
-        _marqueeTimer.Tick += OnMarqueeTick;
+        // Context Menu for Rename and Hide
+        ContextMenuStrip = CreateCardContextMenu();
     }
 
-    private void OnMarqueeTick(object? sender, EventArgs e)
+    private ContextMenuStrip CreateCardContextMenu()
     {
-        if (!_isHovered || _maxScroll <= 0)
+        var menu = new ContextMenuStrip
         {
-            if (_marqueeOffset != 0)
-            {
-                _marqueeOffset = 0;
-                Invalidate(new Rectangle(54, 12, 185, 26));
-            }
-            _marqueeTimer.Stop();
-            return;
-        }
+            Renderer = new ModernFluentMenuRenderer(),
+            Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Regular),
+            ShowImageMargin = true
+        };
 
-        if (_marqueePauseFrames > 0)
+        menu.LocationChanged += (s, e) =>
         {
-            _marqueePauseFrames--;
-            return;
-        }
-
-        if (_marqueeForward)
-        {
-            _marqueeOffset += 1.2f;
-            if (_marqueeOffset >= _maxScroll)
+            if (menu.Visible && menu.Location.X <= 0 && menu.Location.Y <= 0)
             {
-                _marqueeOffset = _maxScroll;
-                _marqueeForward = false;
-                _marqueePauseFrames = 25; // Pause ~1 sec at the end of the text
+                Point cursor = Cursor.Position;
+                var screen = Screen.FromPoint(cursor) ?? Screen.PrimaryScreen;
+                if (screen != null)
+                {
+                    var work = screen.WorkingArea;
+                    int x = Math.Clamp(cursor.X - menu.Width / 2, work.Left + 4, work.Right - menu.Width - 4);
+                    int y = Math.Clamp(cursor.Y - menu.Height, work.Top + 4, work.Bottom - menu.Height - 4);
+                    menu.Location = new Point(x, y);
+                }
             }
-        }
-        else
-        {
-            _marqueeOffset -= 1.8f;
-            if (_marqueeOffset <= 0)
-            {
-                _marqueeOffset = 0;
-                _marqueeForward = true;
-                _marqueePauseFrames = 20; // Pause ~0.8 sec at start
-            }
-        }
+        };
 
-        Invalidate(new Rectangle(54, 12, 185, 26));
+        var titleItem = new ToolStripMenuItem(SettingsManager.GetDeviceName(_device.Id, _device.Name))
+        {
+            Image = IconManager.GetCustomDeviceMenuIcon(_device, 18),
+            Enabled = false,
+            Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Bold)
+        };
+        menu.Items.Add(titleItem);
+        menu.Items.Add(new ToolStripSeparator());
+
+        var renameItem = new ToolStripMenuItem("✏️ Rename Device...");
+        renameItem.Click += (s, e) => PromptRenameDevice();
+        menu.Items.Add(renameItem);
+
+        var pinItem = new ToolStripMenuItem(_device.IsPinnedToTray ? "✕ Unpin from System Tray" : "📌 Pin to System Tray");
+        pinItem.Click += (s, e) =>
+        {
+            _device.IsPinnedToTray = !_device.IsPinnedToTray;
+            _onPinToggled?.Invoke(_device);
+            Invalidate();
+        };
+        menu.Items.Add(pinItem);
+
+        var hideItem = new ToolStripMenuItem("👁️ Hide This Device");
+        hideItem.Click += (s, e) =>
+        {
+            SettingsManager.SetDeviceHidden(_device.Id, true);
+            _onCardChanged?.Invoke();
+        };
+        menu.Items.Add(hideItem);
+
+        return menu;
     }
 
-    private RectangleF PinButtonRect => new RectangleF(Width - 38f, (Height - 28f) / 2f, 28f, 28f);
+    private void PromptRenameDevice()
+    {
+        string currentName = SettingsManager.GetDeviceName(_device.Id, _device.Name);
+        using var form = new Form
+        {
+            Text = "Rename Device",
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            StartPosition = FormStartPosition.CenterParent,
+            ClientSize = new Size(340, 130),
+            MaximizeBox = false,
+            MinimizeBox = false,
+            BackColor = Color.FromArgb(32, 32, 32),
+            ForeColor = Color.White
+        };
+
+        var label = new Label
+        {
+            Text = "Enter custom display name:",
+            Location = new Point(20, 15),
+            AutoSize = true,
+            Font = new Font("Segoe UI Variable Text", 9.5f)
+        };
+
+        var txt = new TextBox
+        {
+            Text = currentName,
+            Location = new Point(22, 42),
+            Size = new Size(296, 26),
+            BackColor = Color.FromArgb(45, 45, 45),
+            ForeColor = Color.White,
+            Font = new Font("Segoe UI Variable Text", 10f),
+            BorderStyle = BorderStyle.FixedSingle
+        };
+
+        var btnOk = new Button
+        {
+            Text = "Save",
+            DialogResult = DialogResult.OK,
+            Location = new Point(160, 84),
+            Size = new Size(72, 30),
+            BackColor = Color.FromArgb(0, 185, 140),
+            ForeColor = Color.Black,
+            FlatStyle = FlatStyle.Flat
+        };
+
+        var btnReset = new Button
+        {
+            Text = "Reset",
+            Location = new Point(80, 84),
+            Size = new Size(72, 30),
+            BackColor = Color.FromArgb(50, 50, 50),
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat
+        };
+        btnReset.Click += (s, e) => { txt.Text = _device.Name; };
+
+        var btnCancel = new Button
+        {
+            Text = "Cancel",
+            DialogResult = DialogResult.Cancel,
+            Location = new Point(240, 84),
+            Size = new Size(72, 30),
+            BackColor = Color.FromArgb(45, 45, 45),
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat
+        };
+
+        form.Controls.AddRange(new Control[] { label, txt, btnReset, btnOk, btnCancel });
+        form.AcceptButton = btnOk;
+        form.CancelButton = btnCancel;
+
+        if (form.ShowDialog() == DialogResult.OK)
+        {
+            SettingsManager.SetDeviceAlias(_device.Id, txt.Text);
+            _onCardChanged?.Invoke();
+            Invalidate();
+        }
+    }
+
+    private RectangleF PinButtonRect => new RectangleF(Width - 36f, (Height - 28f) / 2f, 28f, 28f);
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
@@ -118,11 +216,6 @@ public class ModernBatteryDeviceCard : Control
     {
         base.OnMouseEnter(e);
         _isHovered = true;
-        if (_maxScroll > 0)
-        {
-            _marqueePauseFrames = 12; // Brief 500ms pause before scrolling
-            _marqueeTimer.Start();
-        }
         Invalidate();
     }
 
@@ -131,10 +224,6 @@ public class ModernBatteryDeviceCard : Control
         base.OnMouseLeave(e);
         _isHovered = false;
         _isPinHovered = false;
-        _marqueeOffset = 0f;
-        _marqueeForward = true;
-        _marqueePauseFrames = 0;
-        _marqueeTimer.Stop();
         Cursor = Cursors.Default;
         Invalidate();
     }
@@ -226,42 +315,68 @@ public class ModernBatteryDeviceCard : Control
         }
 
         // 4. Content Typography & Icons
-        // Custom Image or Glyph Icon (Auto-cropped and white silhouette rendered)
+        // Custom Image or Glyph Icon (Vertically centered)
+        float iconY = (h - 32f) / 2f;
         var customIcon = IconManager.GetCustomDeviceImage(_device);
         if (customIcon != null)
         {
-            var iconRect = new RectangleF(15f, 18f, 30f, 30f);
+            var iconRect = new RectangleF(15f, iconY, 30f, 30f);
             IconManager.DrawCustomDeviceImage(g, _device, iconRect);
         }
         else
         {
             string iconText = _device.DefaultGlyph;
-            var iconRect = new RectangleF(14f, 16f, 32f, 34f);
+            var iconRect = new RectangleF(14f, iconY, 32f, 32f);
             var sfIcon = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
             g.DrawString(iconText, IconFont, Brushes.White, iconRect, sfIcon);
         }
 
-        // Title: Device Name with Smooth Marquee Scrolling for Long Names
-        string displayName = _device.Name;
-        float maxTitleWidth = (w - 116f) - 54f - 6f; // Available title horizontal space
-        var titleRect = new RectangleF(54f, 14f, maxTitleWidth, 22f);
+        // Title: Multi-Line Wrapping for Long Device Names (No Marquee, Full 2 Lines)
+        string displayName = SettingsManager.GetDeviceName(_device.Id, _device.Name);
+        float maxTitleWidth = (w - 100f) - 54f; // ~200px available
+        bool isMultiLine = Height > 72;
 
-        var measuredSize = g.MeasureString(displayName, TitleFont);
-        _maxScroll = Math.Max(0, measuredSize.Width - maxTitleWidth + 6f);
+        var titleRect = isMultiLine
+            ? new RectangleF(54f, 8f, maxTitleWidth, 44f)
+            : new RectangleF(54f, 14f, maxTitleWidth, 24f);
 
-        var prevClip = g.Clip;
-        g.SetClip(titleRect);
+        using (var titleBrush = new SolidBrush(Color.FromArgb(240, 240, 240)))
+        using (var sfTitle = new StringFormat
+        {
+            Trimming = StringTrimming.EllipsisWord,
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Near
+        })
+        {
+            g.DrawString(displayName, TitleFont, titleBrush, titleRect, sfTitle);
+        }
 
-        using var titleBrush = new SolidBrush(Color.FromArgb(240, 240, 240));
-        float titleDrawX = 54f - (_maxScroll > 0 ? _marqueeOffset : 0f);
-        g.DrawString(displayName, TitleFont, titleBrush, titleDrawX, 14f);
+        // Subtitle: Always displays Connection Type (e.g. "Bluetooth", "2.4 GHz") + TWS Earbuds / Health Details
+        string connType = _device.ConnectionDisplay;
+        string subtitleText;
+        if (_device.SubBatteries != null && _device.SubBatteries.Count > 0)
+        {
+            string subs = string.Join("   ", _device.SubBatteries.Select(s => $"{s.Label}: {s.Percentage}%{(s.IsCharging ? "⚡" : "")}"));
+            subtitleText = $"{connType}  •  {subs}";
+        }
+        else if (_device.HealthPercentage.HasValue && _device.Category == DeviceCategory.Laptop)
+        {
+            subtitleText = $"{connType}  •  Health: {_device.HealthPercentage.Value}%";
+        }
+        else
+        {
+            subtitleText = connType;
+        }
 
-        g.Clip = prevClip;
+        var subRect = isMultiLine
+            ? new RectangleF(54f, 54f, maxTitleWidth + 50f, 20f)
+            : new RectangleF(54f, 38f, maxTitleWidth + 50f, 20f);
 
-        // Subtitle: Connection type (e.g. "2.4 GHz", "Bluetooth", "Xbox Wireless")
-        string connectionText = _device.ConnectionDisplay;
-        using var subBrush = new SolidBrush(Color.FromArgb(145, 145, 145));
-        g.DrawString(connectionText, SubFont, subBrush, 54f, 37f);
+        using (var subBrush = new SolidBrush(Color.FromArgb(150, 150, 150)))
+        using (var sfSub = new StringFormat { Trimming = StringTrimming.EllipsisCharacter })
+        {
+            g.DrawString(subtitleText, SubFont, subBrush, subRect, sfSub);
+        }
 
         // Battery Percentage on right (before plus button)
         string pctText = _device.BatteryPercentage.HasValue
@@ -276,7 +391,7 @@ public class ModernBatteryDeviceCard : Control
             : Color.FromArgb(70, 225, 165);
 
         using var pctBrush = new SolidBrush(pctColor);
-        var pctRect = new RectangleF(w - 116f, 0f, 74f, h);
+        var pctRect = new RectangleF(w - 98f, 0f, 60f, h);
         var sfPct = new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center };
         g.DrawString(pctText, PctFont, pctBrush, pctRect, sfPct);
 
@@ -322,11 +437,6 @@ public class ModernBatteryDeviceCard : Control
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _marqueeTimer.Stop();
-            _marqueeTimer.Dispose();
-        }
         base.Dispose(disposing);
     }
 }

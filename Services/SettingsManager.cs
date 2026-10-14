@@ -9,6 +9,12 @@ public class AppSettings
     public int LowBatteryThreshold { get; set; } = 20;
     public bool LowBatteryAlertsEnabled { get; set; } = true;
     public bool StartWithWindows { get; set; } = false;
+    public bool GlobalHotkeyEnabled { get; set; } = true;
+    public uint HotkeyModifiers { get; set; } = 0x0008 | 0x0001; // Win + Alt (MOD_WIN | MOD_ALT)
+    public uint HotkeyKey { get; set; } = 0x42; // 'B'
+    public string HotkeyDisplayText { get; set; } = "Win + Alt + B";
+    public Dictionary<string, string> DeviceAliases { get; set; } = new();
+    public List<string> HiddenDeviceIds { get; set; } = new();
 }
 
 /// <summary>
@@ -60,6 +66,93 @@ public static class SettingsManager
             StartupManager.SetStartup(value);
             Save();
         }
+    }
+
+    public static bool GlobalHotkeyEnabled
+    {
+        get => _currentSettings.GlobalHotkeyEnabled;
+        set
+        {
+            _currentSettings.GlobalHotkeyEnabled = value;
+            Save();
+        }
+    }
+
+    public static uint HotkeyModifiers
+    {
+        get => _currentSettings.HotkeyModifiers;
+        set
+        {
+            _currentSettings.HotkeyModifiers = value;
+            Save();
+        }
+    }
+
+    public static uint HotkeyKey
+    {
+        get => _currentSettings.HotkeyKey;
+        set
+        {
+            _currentSettings.HotkeyKey = value;
+            Save();
+        }
+    }
+
+    public static string HotkeyDisplayText
+    {
+        get => string.IsNullOrWhiteSpace(_currentSettings.HotkeyDisplayText) ? "Win + Alt + B" : _currentSettings.HotkeyDisplayText;
+        set
+        {
+            _currentSettings.HotkeyDisplayText = value;
+            Save();
+        }
+    }
+
+    public static string GetDeviceName(string deviceId, string defaultName)
+    {
+        if (_currentSettings.DeviceAliases.TryGetValue(deviceId, out var alias) && !string.IsNullOrWhiteSpace(alias))
+        {
+            return alias;
+        }
+        return defaultName;
+    }
+
+    public static void SetDeviceAlias(string deviceId, string? alias)
+    {
+        if (string.IsNullOrWhiteSpace(alias))
+        {
+            _currentSettings.DeviceAliases.Remove(deviceId);
+        }
+        else
+        {
+            _currentSettings.DeviceAliases[deviceId] = alias.Trim();
+        }
+        Save();
+    }
+
+    public static bool IsDeviceHidden(string deviceId)
+    {
+        return _currentSettings.HiddenDeviceIds.Contains(deviceId);
+    }
+
+    public static void SetDeviceHidden(string deviceId, bool hide)
+    {
+        if (hide)
+        {
+            if (!_currentSettings.HiddenDeviceIds.Contains(deviceId))
+                _currentSettings.HiddenDeviceIds.Add(deviceId);
+        }
+        else
+        {
+            _currentSettings.HiddenDeviceIds.Remove(deviceId);
+        }
+        Save();
+    }
+
+    public static void UnhideAllDevices()
+    {
+        _currentSettings.HiddenDeviceIds.Clear();
+        Save();
     }
 
     public static void Load()

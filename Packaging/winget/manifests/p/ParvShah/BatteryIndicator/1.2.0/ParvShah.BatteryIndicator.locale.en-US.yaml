@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: ParvShah.BatteryIndicator
+PackageVersion: 1.2.0
+PackageLocale: en-US
+Publisher: Parv Shah
+PublisherUrl: https://github.com/ParvShah2001
+PublisherSupportUrl: https://github.com/ParvShah2001/Battery-Indicator/issues
+PrivacyUrl: https://github.com/ParvShah2001/Battery-Indicator/blob/main/PRIVACY.md
+Author: Parv Shah
+PackageName: Battery Indicator
+PackageUrl: https://github.com/ParvShah2001/Battery-Indicator
+License: MIT
+LicenseUrl: https://github.com/ParvShah2001/Battery-Indicator/blob/main/LICENSE
+Copyright: Copyright (c) 2026 Parv Shah
+ShortDescription: Modern Windows 11 system tray battery monitor for 2.4GHz wireless dongles, Bluetooth peripherals, and gaming gear.
+Description: |-
+  Battery Indicator is a sleek, native Windows 11 system tray utility designed to monitor battery telemetry across all your wireless peripherals:
+  - 2.4GHz wireless gaming mice (Logitech Lightspeed, Razer HyperSpeed, ATK/VXE, Glorious, etc.)
+  - Wireless mechanical keyboards (Keychron, NuPhy, Akko, Epomaker, Portronics)
+  - Bluetooth True Wireless Stereo (TWS) earbuds with Left & Right bud telemetry
+  - Bluetooth headphones, styluses, and speakers
+  - Xbox Wireless Controllers, DualSense, DualShock 4, and Nintendo Switch controllers
+  - Uninterruptible Power Supplies (APC, CyberPower UPS)
+  - Custom crowdsourced JSON device profiles for zero-code community additions
+  - Customizable global summon hotkey (Default: Win + Alt + B)
+  - Dedicated circular battery gauges pinned directly to your taskbar system tray
+  - 100% Telemetry-Free local crash logging and privacy protection
+Moniker: battery-indicator
+Tags:
+  - battery
+  - battery-monitor
+  - bluetooth
+  - wireless
+  - peripherals
+  - keyboard
+  - mouse
+  - gamepad
+  - windows11
+  - system-tray
+ReleaseNotesUrl: https://github.com/ParvShah2001/Battery-Indicator/releases/tag/v1.2.0
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

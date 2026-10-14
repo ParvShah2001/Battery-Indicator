@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+PackageIdentifier: ParvShah.BatteryIndicator
+PackageVersion: 1.2.0
+Platform:
+  - Windows.Desktop
+MinimumOSVersion: 10.0.19041.0
+InstallerType: msix
+Scope: user
+InstallModes:
+  - silent
+  - interactive
+UpgradeBehavior: install
+Commands:
+  - battery-indicator
+Protocols:
+  - batteryindicator
+Installers:
+  - Architecture: x64
+    InstallerType: msix
+    InstallerUrl: https://github.com/ParvShah2001/Battery-Indicator/releases/download/v1.2.0/BatteryIndicator-1.2.0.msix
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000 # Update with actual release SHA256
+    SignatureSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: installer
+ManifestVersion: 1.6.0

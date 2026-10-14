@@ -23,7 +23,16 @@ public enum DeviceCategory
     FlightStickOrWheel,
     VrController,
     PhoneOrTablet,
+    Laptop,
+    Ups,
     Generic
+}
+
+public class SubBatteryInfo
+{
+    public required string Label { get; set; } // "L", "R"
+    public int Percentage { get; set; }
+    public bool IsCharging { get; set; }
 }
 
 public class BatteryDeviceInfo
@@ -36,19 +45,32 @@ public class BatteryDeviceInfo
     public bool IsCharging { get; set; }
     public bool IsConnected { get; set; }
     public int? VoltageMv { get; set; }
+    public int? DischargeRateMw { get; set; } // Power rate in milliwatts
+    public int? HealthPercentage { get; set; } // Battery health / degradation %
+    public List<SubBatteryInfo>? SubBatteries { get; set; } // For TWS earbuds (L, R)
     public bool IsPinnedToTray { get; set; }
     public DateTime LastUpdated { get; set; } = DateTime.Now;
 
-    public string BatteryDisplay => BatteryPercentage.HasValue
-        ? $"{BatteryPercentage.Value}%" + (IsCharging ? " ⚡" : "")
-        : "Unknown";
+    public string BatteryDisplay
+    {
+        get
+        {
+            if (SubBatteries != null && SubBatteries.Count > 0)
+            {
+                return string.Join(" | ", SubBatteries.Select(s => $"{s.Label}: {s.Percentage}%{(s.IsCharging ? "⚡" : "")}"));
+            }
+            return BatteryPercentage.HasValue
+                ? $"{BatteryPercentage.Value}%" + (IsCharging ? " ⚡" : "")
+                : "Unknown";
+        }
+    }
 
     public string ConnectionDisplay => ConnectionType switch
     {
         DeviceConnectionType.Wireless24G => "2.4 GHz",
         DeviceConnectionType.Bluetooth => "Bluetooth",
         DeviceConnectionType.BluetoothLE => "Bluetooth",
-        DeviceConnectionType.UsbWired => "USB",
+        DeviceConnectionType.UsbWired => "USB / Wired",
         DeviceConnectionType.XboxWireless => "Xbox Wireless",
         _ => "Wireless"
     };
@@ -65,6 +87,8 @@ public class BatteryDeviceInfo
         DeviceCategory.FlightStickOrWheel => "🕹️",
         DeviceCategory.VrController => "🥽",
         DeviceCategory.PhoneOrTablet => "📱",
+        DeviceCategory.Laptop => "💻",
+        DeviceCategory.Ups => "🔋",
         _ => "🔋"
     };
 
@@ -101,6 +125,12 @@ public class BatteryDeviceInfo
 
         if (n.Contains("phone") || n.Contains("galaxy") || (n.Contains("pixel") && !n.Contains("buds")) || n.Contains("iphone") || n.Contains("ipad") || n.Contains("tablet"))
             return DeviceCategory.PhoneOrTablet;
+
+        if (n.Contains("ups") || n.Contains("back-ups") || n.Contains("cyberpower") || n.Contains("apc"))
+            return DeviceCategory.Ups;
+
+        if (n.Contains("laptop") || n.Contains("internal battery") || n.Contains("notebook"))
+            return DeviceCategory.Laptop;
 
         return connectionType == DeviceConnectionType.Wireless24G ? DeviceCategory.Mouse : DeviceCategory.Generic;
     }

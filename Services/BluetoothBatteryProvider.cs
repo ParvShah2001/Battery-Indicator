@@ -24,7 +24,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
     public string ProviderName => "Bluetooth Devices";
 
     // Stable cache across poll intervals so connected devices remain visible and don't flicker
-    private static readonly Dictionary<string, (int Battery, bool Charging)> _batteryCache = new();
+    private static readonly Dictionary<string, (int? Battery, bool Charging, List<SubBatteryInfo>? Sub)> _batteryCache = new();
 
     public async Task<List<BatteryDeviceInfo>> PollDevicesAsync()
     {
@@ -68,6 +68,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                 var services = await ble.GetGattServicesForUuidAsync(GattServiceUuids.Battery);
                 if (services.Status == GattCommunicationStatus.Success && services.Services.Count > 0)
                 {
+                    var levels = new List<int>();
                     foreach (var s in services.Services)
                     {
                         var chars = await s.GetCharacteristicsForUuidAsync(GattCharacteristicUuids.BatteryLevel);
@@ -80,20 +81,38 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                                 {
                                     var reader = Windows.Storage.Streams.DataReader.FromBuffer(res.Value);
                                     byte level = reader.ReadByte();
-
-                                    string name = string.IsNullOrWhiteSpace(ble.Name) ? devInfo.Name : ble.Name;
-                                    result.Add(new BatteryDeviceInfo
-                                    {
-                                        Id = $"BLE_{ble.DeviceId}",
-                                        Name = name,
-                                        Category = BatteryDeviceInfo.InferCategory(name, DeviceConnectionType.BluetoothLE),
-                                        ConnectionType = DeviceConnectionType.Bluetooth,
-                                        BatteryPercentage = Math.Clamp((int)level, 0, 100),
-                                        IsConnected = true
-                                    });
+                                    levels.Add(Math.Clamp((int)level, 0, 100));
                                 }
                             }
                         }
+                    }
+
+                    if (levels.Count > 0)
+                    {
+                        string name = string.IsNullOrWhiteSpace(ble.Name) ? devInfo.Name : ble.Name;
+                        var category = BatteryDeviceInfo.InferCategory(name, DeviceConnectionType.BluetoothLE);
+                        List<SubBatteryInfo>? subBatt = null;
+
+                        if (levels.Count >= 2 && category == DeviceCategory.Earbuds)
+                        {
+                            subBatt = new List<SubBatteryInfo>
+                            {
+                                new SubBatteryInfo { Label = "L", Percentage = levels[0], IsCharging = false },
+                                new SubBatteryInfo { Label = "R", Percentage = levels[1], IsCharging = false }
+                            };
+                        }
+
+                        int avg = (int)Math.Round(levels.Average());
+                        result.Add(new BatteryDeviceInfo
+                        {
+                            Id = $"BLE_{ble.DeviceId}",
+                            Name = name,
+                            Category = category,
+                            ConnectionType = DeviceConnectionType.Bluetooth,
+                            BatteryPercentage = avg,
+                            SubBatteries = subBatt,
+                            IsConnected = true
+                        });
                     }
                 }
             }
@@ -121,6 +140,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
 
                 int? batteryLevel = null;
                 bool isCharging = false;
+                List<SubBatteryInfo>? subBatteries = null;
 
                 var rfcommResult = await bt.GetRfcommServicesAsync(BluetoothCacheMode.Cached);
 
@@ -130,12 +150,13 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                     string uuid = s.ServiceId.AsString().ToUpperInvariant();
                     if (uuid.Contains("0000079A"))
                     {
-                        var (batt, chg) = await QueryOnePlusEarbudsAsync(s);
+                        var (batt, chg, subs) = await QueryOnePlusEarbudsAsync(s);
                         if (batt.HasValue)
                         {
                             batteryLevel = batt.Value;
                             isCharging = chg;
-                            _batteryCache[deviceKey] = (batteryLevel.Value, isCharging);
+                            subBatteries = subs;
+                            _batteryCache[deviceKey] = (batteryLevel.Value, isCharging, subBatteries);
                             break;
                         }
                     }
@@ -146,6 +167,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                 {
                     batteryLevel = cached.Battery;
                     isCharging = cached.Charging;
+                    subBatteries = cached.Sub;
                 }
 
                 var category = BatteryDeviceInfo.InferCategory(devName, DeviceConnectionType.Bluetooth);
@@ -163,6 +185,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                     ConnectionType = DeviceConnectionType.Bluetooth,
                     BatteryPercentage = batteryLevel,
                     IsCharging = isCharging,
+                    SubBatteries = subBatteries,
                     IsConnected = true
                 });
             }
@@ -182,7 +205,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
     ///  5. Query Category 0x06 / Subcommand 0x01
     ///  6. Parse exact earbud battery bytes [0x01, Left%, 0x02, Right%, 0x03, Case%]
     /// </summary>
-    private async Task<(int? Battery, bool Charging)> QueryOnePlusEarbudsAsync(RfcommDeviceService service)
+    private async Task<(int? Battery, bool Charging, List<SubBatteryInfo>? Subs)> QueryOnePlusEarbudsAsync(RfcommDeviceService service)
     {
         try
         {
@@ -196,7 +219,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
             // 1. Initial earbud packet
             byte[] init = new byte[14];
             int r0 = await inStream.ReadAsync(init, 0, 14, cts.Token);
-            if (r0 < 7 || init[0] != 0xAA) return (null, false);
+            if (r0 < 7 || init[0] != 0xAA) return (null, false, null);
 
             byte seq = init[6];
 
@@ -208,7 +231,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
             // 3. Second earbud packet
             byte[] p2 = new byte[18];
             int r1 = await inStream.ReadAsync(p2, 0, 18, cts.Token);
-            if (r1 < 7) return (null, false);
+            if (r1 < 7) return (null, false, null);
 
             byte seq2 = p2[6];
             byte[] ack2 = new byte[] { 0xAA, 0x05, 0x00, 0x00, 0x00, 0x01, seq2, 0x00, 0x00 };
@@ -243,6 +266,10 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                     if (bResp[i] == 0x02 && bResp[i + 1] <= 100) right = bResp[i + 1];
                 }
 
+                var subs = new List<SubBatteryInfo>();
+                if (left >= 0) subs.Add(new SubBatteryInfo { Label = "L", Percentage = left, IsCharging = false });
+                if (right >= 0) subs.Add(new SubBatteryInfo { Label = "R", Percentage = right, IsCharging = false });
+
                 int sum = 0;
                 int count = 0;
                 if (left >= 0) { sum += left; count++; }
@@ -251,7 +278,7 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
                 if (count > 0)
                 {
                     int avg = sum / count;
-                    return (avg, false);
+                    return (avg, false, subs.Count > 0 ? subs : null);
                 }
             }
         }
@@ -260,6 +287,6 @@ public class BluetoothBatteryProvider : IDeviceBatteryProvider
             Debug.WriteLine($"[OnePlus] Telemetry query error: {ex.Message}");
         }
 
-        return (null, false);
+        return (null, false, null);
     }
 }

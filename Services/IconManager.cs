@@ -304,6 +304,8 @@ public static class IconManager
         DeviceCategory.FlightStickOrWheel => "wheel",
         DeviceCategory.VrController => "vr",
         DeviceCategory.PhoneOrTablet => "phone",
+        DeviceCategory.Laptop => "laptop",
+        DeviceCategory.Ups => "ups",
         _ => "device"
     };
 

@@ -6,6 +6,7 @@ using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BatteryIndicator.Models;
+using BatteryIndicator.Services;
 
 namespace BatteryIndicator.UI;
 
@@ -42,10 +43,13 @@ public class DeviceListFlyoutForm : Form
     private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     private const int DWMWCP_ROUND = 2;
 
-    public DeviceListFlyoutForm(Action onRefreshRequested, Action<BatteryDeviceInfo>? onPinToggled = null)
+    private readonly Action? _onCardChanged;
+
+    public DeviceListFlyoutForm(Action onRefreshRequested, Action<BatteryDeviceInfo>? onPinToggled = null, Action? onCardChanged = null)
     {
         _onRefreshRequested = onRefreshRequested;
         _onPinToggled = onPinToggled;
+        _onCardChanged = onCardChanged;
 
         Text = "Battery Indicator";
         FormBorderStyle = FormBorderStyle.None;
@@ -247,11 +251,14 @@ public class DeviceListFlyoutForm : Form
         _cardsInnerPanel.SuspendLayout();
         _cardsInnerPanel.Controls.Clear();
 
-        if (devices.Count == 0)
+        // Filter out user-hidden devices
+        var visibleDevices = devices.Where(d => !SettingsManager.IsDeviceHidden(d.Id)).ToList();
+
+        if (visibleDevices.Count == 0)
         {
             var emptyLabel = new Label
             {
-                Text = "No devices currently connected",
+                Text = devices.Count > 0 ? "All devices are currently hidden" : "No devices currently connected",
                 Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Regular),
                 ForeColor = Color.FromArgb(130, 130, 130),
                 AutoSize = false,
@@ -265,9 +272,9 @@ public class DeviceListFlyoutForm : Form
         else
         {
             int y = 0;
-            foreach (var dev in devices)
+            foreach (var dev in visibleDevices)
             {
-                var card = new ModernBatteryDeviceCard(dev, onPinToggled: _onPinToggled)
+                var card = new ModernBatteryDeviceCard(dev, onPinToggled: _onPinToggled, onCardChanged: _onCardChanged)
                 {
                     Location = new Point(0, y),
                     Width = 356
@@ -284,21 +291,28 @@ public class DeviceListFlyoutForm : Form
         _cardsInnerPanel.ResumeLayout(true);
 
         _footerLeft.Text = "Last updated - " + DateTime.Now.ToString("hh:mm tt");
-        _footerRight.Text = $"Devices - {devices.Count}";
+        _footerRight.Text = $"Devices - {visibleDevices.Count}";
 
         UpdateArrowVisibility();
     }
 
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
     public void ShowNearTray(Point trayLocation)
     {
-        var workingArea = Screen.GetWorkingArea(this);
+        var screen = Screen.FromPoint(trayLocation) ?? Screen.PrimaryScreen ?? Screen.AllScreens[0];
+        var workingArea = screen.WorkingArea;
+
         int x = Math.Max(workingArea.Left + 8, Math.Min(workingArea.Right - Width - 8, trayLocation.X - Width / 2));
         int y = Math.Max(workingArea.Top + 8, workingArea.Bottom - Height - 12);
 
         Location = new Point(x, y);
+        TopMost = true;
         Show();
         BringToFront();
         Activate();
+        SetForegroundWindow(Handle);
     }
 }
 
