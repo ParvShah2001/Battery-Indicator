@@ -10,7 +10,7 @@
     Name="ParvShah.BatteryIndicatorforWindows"
     ProcessorArchitecture="x64"
     Publisher="CN=16FF1D7F-5899-4815-84D3-1B39240C13CD"
-    Version="1.0.0.0" />
+    Version="1.2.0.0" />
 
   <Properties>
     <DisplayName>Battery Indicator for Windows</DisplayName>
