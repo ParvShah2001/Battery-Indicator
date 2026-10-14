@@ -22,6 +22,12 @@ public static class DeviceProfileManager
 
     public static string UserProfilesDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "BatteryIndicatorForWindows",
+        "Profiles"
+    );
+
+    public static string LegacyUserProfilesDir => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "BatteryIndicator",
         "Profiles"
     );
@@ -75,14 +81,32 @@ public static class DeviceProfileManager
                 LoadProfilesFromFile(jsonFile);
             }
 
+            if (Directory.Exists(LegacyUserProfilesDir))
+            {
+                foreach (var jsonFile in Directory.GetFiles(LegacyUserProfilesDir, "*.json"))
+                {
+                    LoadProfilesFromFile(jsonFile);
+                }
+            }
+
             string userSingleFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "BatteryIndicator",
+                "BatteryIndicatorForWindows",
                 "device_profiles.json"
             );
             if (File.Exists(userSingleFile))
             {
                 LoadProfilesFromFile(userSingleFile);
+            }
+
+            string legacySingleFile = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "BatteryIndicator",
+                "device_profiles.json"
+            );
+            if (File.Exists(legacySingleFile))
+            {
+                LoadProfilesFromFile(legacySingleFile);
             }
         }
         catch (Exception ex)

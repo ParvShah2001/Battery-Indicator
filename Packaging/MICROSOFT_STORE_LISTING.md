@@ -1,13 +1,13 @@
 # 🛒 Microsoft Store Listing Submission Package
 
-**Application Name:** Battery Indicator  
-**Package Identifier:** `ParvShah.BatteryIndicator`  
+**Application Name:** Battery Indicator for Windows  
+**Package Identifier:** `ParvShah.BatteryIndicatorforWindows`  
 **Current Release Version:** `1.2.0`  
 **Category:** Utilities & Tools > System & Performance  
 **Pricing:** Free  
-**Support Contact URL:** [https://github.com/ParvShah2001/Battery-Indicator/issues](https://github.com/ParvShah2001/Battery-Indicator/issues)  
-**Privacy Policy URL:** [https://github.com/ParvShah2001/Battery-Indicator/blob/main/PRIVACY.md](https://github.com/ParvShah2001/Battery-Indicator/blob/main/PRIVACY.md)  
-**Repository URL:** [https://github.com/ParvShah2001/Battery-Indicator](https://github.com/ParvShah2001/Battery-Indicator)  
+**Support Contact URL:** [https://github.com/ParvShah2001/Battery-Indicator-for-Windows/issues](https://github.com/ParvShah2001/Battery-Indicator-for-Windows/issues)  
+**Privacy Policy URL:** [https://github.com/ParvShah2001/Battery-Indicator-for-Windows/blob/main/PRIVACY.md](https://github.com/ParvShah2001/Battery-Indicator-for-Windows/blob/main/PRIVACY.md)  
+**Repository URL:** [https://github.com/ParvShah2001/Battery-Indicator-for-Windows](https://github.com/ParvShah2001/Battery-Indicator-for-Windows)  
 
 ---
 
@@ -21,7 +21,7 @@
 
 Windows has a notorious blind spot: **it cannot display battery levels for 2.4GHz wireless USB dongle mice, mechanical keyboards, gaming controllers, or TWS earbuds directly in your taskbar system tray**. Peripheral manufacturers force you to keep bloated, resource-heavy background suites running (Razer Synapse, Logitech G HUB, Corsair iCUE, etc.) just to check if your mouse or keyboard is about to die mid-game or mid-work.
 
-**Battery Indicator** delivers an ultra-lightweight, native, bloat-free Windows 11 utility that monitors battery telemetry directly across all your wireless peripherals and displays them right beside your Windows clock.
+**Battery Indicator for Windows** delivers an ultra-lightweight, native, bloat-free Windows 11 utility that monitors battery telemetry directly across all your wireless peripherals and displays them right beside your Windows clock.
 
 ### 🌟 Highlights & Core Capabilities:
 

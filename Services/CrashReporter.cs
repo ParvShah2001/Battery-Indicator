@@ -21,7 +21,7 @@ public static class CrashReporter
 {
     private static readonly string CrashReportsDir = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "BatteryIndicator",
+        "BatteryIndicatorForWindows",
         "CrashReports"
     );
 
@@ -76,7 +76,7 @@ public static class CrashReporter
 
             var sb = new StringBuilder();
             sb.AppendLine("================================================================================");
-            sb.AppendLine("                  BATTERY INDICATOR CRASH REPORT (LOCAL ONLY)");
+            sb.AppendLine("          BATTERY INDICATOR FOR WINDOWS CRASH REPORT (LOCAL ONLY)");
             sb.AppendLine("================================================================================");
             sb.AppendLine($"Timestamp (Local): {DateTime.Now:yyyy-MM-dd HH:mm:ss zzz}");
             sb.AppendLine($"Timestamp (UTC):   {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
@@ -113,7 +113,7 @@ public static class CrashReporter
         {
             using var form = new Form
             {
-                Text = "Battery Indicator - Crash Notice",
+                Text = "Battery Indicator for Windows - Crash Notice",
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterScreen,
                 ClientSize = new Size(460, 240),
@@ -135,7 +135,7 @@ public static class CrashReporter
 
             var titleLabel = new Label
             {
-                Text = "Battery Indicator encountered an issue",
+                Text = "Battery Indicator for Windows encountered an issue",
                 Font = new Font("Segoe UI Variable Display", 11.5f, FontStyle.Bold),
                 Location = new Point(76, 22),
                 Size = new Size(360, 26),
@@ -200,8 +200,8 @@ public static class CrashReporter
         {
             // Fallback to standard safe message box if custom form fails
             MessageBox.Show(
-                $"Battery Indicator error: {ex.Message}\nLog saved locally to {reportPath}",
-                "Battery Indicator",
+                $"Battery Indicator for Windows error: {ex.Message}\nLog saved locally to {reportPath}",
+                "Battery Indicator for Windows",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning
             );

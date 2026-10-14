@@ -22,7 +22,8 @@ public class AppSettings
 /// </summary>
 public static class SettingsManager
 {
-    private static readonly string AppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator");
+    private static readonly string LegacyAppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator");
+    private static readonly string AppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicatorForWindows");
     private static readonly string SettingsFile = Path.Combine(AppDataDir, "settings.json");
     private static readonly string LegacySettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
     private static AppSettings _currentSettings = new();
@@ -31,7 +32,15 @@ public static class SettingsManager
     {
         try
         {
-            if (!Directory.Exists(AppDataDir)) Directory.CreateDirectory(AppDataDir);
+            if (!Directory.Exists(AppDataDir))
+            {
+                Directory.CreateDirectory(AppDataDir);
+                string oldSettings = Path.Combine(LegacyAppDataDir, "settings.json");
+                if (File.Exists(oldSettings) && !File.Exists(SettingsFile))
+                {
+                    File.Copy(oldSettings, SettingsFile, true);
+                }
+            }
         }
         catch { }
         Load();

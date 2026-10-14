@@ -7,14 +7,14 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {},
     ".NETCoreApp,Version=v9.0/win-x64": {
-      "Battery Indicator/1.0.0": {
+      "Battery Indicator for Windows/1.0.0": {
         "dependencies": {
           "HidSharp": "2.6.4",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.1742",
           "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.19041.57"
         },
         "runtime": {
-          "Battery Indicator.dll": {}
+          "Battery Indicator for Windows.dll": {}
         }
       },
       "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.57": {
@@ -41,7 +41,7 @@
     }
   },
   "libraries": {
-    "Battery Indicator/1.0.0": {
+    "Battery Indicator for Windows/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

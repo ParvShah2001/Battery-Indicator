@@ -7,14 +7,14 @@
 #>
 
 param(
-    [string]$OutputPath = "Packaging\BatteryIndicator.msix"
+    [string]$OutputPath = "Packaging\BatteryIndicatorForWindows.msix"
 )
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 
 Write-Host "=============================================" -ForegroundColor Cyan
-Write-Host "   Battery Indicator - Fast MSIX Packager    " -ForegroundColor Cyan
+Write-Host "  Battery Indicator for Windows - MSIX Build " -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 
 # 1. Locate makeappx.exe from local NuGet cache or Windows Kits

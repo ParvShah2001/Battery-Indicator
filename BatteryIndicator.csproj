@@ -9,12 +9,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>$(NoWarn);WFO1000</NoWarn>
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <AssemblyName>Battery Indicator</AssemblyName>
-    <TargetName>Battery Indicator</TargetName>
-    <Product>Battery Indicator</Product>
-    <AssemblyTitle>Battery Indicator</AssemblyTitle>
+    <AssemblyName>Battery Indicator for Windows</AssemblyName>
+    <TargetName>Battery Indicator for Windows</TargetName>
+    <Product>Battery Indicator for Windows</Product>
+    <AssemblyTitle>Battery Indicator for Windows</AssemblyTitle>
     <Description>Windows 11 Native Battery Indicator for 2.4GHz Dongles and Bluetooth Devices</Description>
     <Version>1.0.0</Version>
+    <Optimize>true</Optimize>
+    <TieredCompilation>true</TieredCompilation>
+    <TieredPGO>true</TieredPGO>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

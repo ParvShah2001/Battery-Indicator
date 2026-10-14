@@ -30,10 +30,10 @@
   <Applications>
     <Application
       Id="BatteryIndicator"
-      Executable="Battery Indicator.exe"
+      Executable="Battery Indicator for Windows.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Battery Indicator"
+        DisplayName="Battery Indicator for Windows"
         Description="Windows 11 Native Taskbar Battery Monitor for 2.4GHz Dongles and Bluetooth Devices"
         BackgroundColor="#181818"
         Square150x150Logo="StoreAssets\Square150x150Logo.png"
@@ -42,8 +42,8 @@
         <uap:SplashScreen Image="StoreAssets\SplashScreen.png" BackgroundColor="#181818" />
       </uap:VisualElements>
       <Extensions>
-        <desktop:Extension Category="windows.startupTask" Executable="Battery Indicator.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="BatteryIndicatorStartup" Enabled="true" DisplayName="Battery Indicator" />
+        <desktop:Extension Category="windows.startupTask" Executable="Battery Indicator for Windows.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="BatteryIndicatorStartup" Enabled="true" DisplayName="Battery Indicator for Windows" />
         </desktop:Extension>
       </Extensions>
     </Application>

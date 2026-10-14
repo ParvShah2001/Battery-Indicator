@@ -154,7 +154,7 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         // 4. Initialize Master NotifyIcon
         _notifyIcon = new NotifyIcon
         {
-            Text = "Battery Indicator: Initializing...",
+            Text = "Battery Indicator for Windows: Initializing...",
             Icon = _appIcon ?? TrayIconRenderer.CreateBatteryIcon(null, false, false),
             ContextMenuStrip = _contextMenu,
             Visible = true
@@ -251,7 +251,7 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
             var openItem = new ToolStripMenuItem("Show All Devices...");
             openItem.Click += (s, e) => _flyoutForm.ShowNearTray(Cursor.Position);
 
-            var exitItem = new ToolStripMenuItem("Exit Battery Indicator");
+            var exitItem = new ToolStripMenuItem("Exit Battery Indicator for Windows");
             exitItem.Click += (s, e) => ExitThread();
 
             menu.Items.Add(titleItem);
@@ -295,7 +295,7 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         _contextMenu.Items.Clear();
 
         // 1. Header (Compact app title)
-        var titleItem = new ToolStripMenuItem("Battery Indicator")
+        var titleItem = new ToolStripMenuItem("Battery Indicator for Windows")
         {
             Image = IconManager.GetAppMenuIcon(16),
             Enabled = false,
@@ -433,7 +433,7 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
         {
             try
             {
-                string crashDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator", "CrashReports");
+                string crashDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicatorForWindows", "CrashReports");
                 if (!Directory.Exists(crashDir)) Directory.CreateDirectory(crashDir);
                 Process.Start("explorer.exe", crashDir);
             }
@@ -906,8 +906,8 @@ public class BatteryIndicatorApplicationContext : ApplicationContext
             .FirstOrDefault();
 
         string tooltip = primaryDevice != null
-            ? $"Battery Indicator: {primaryDevice.Name} ({primaryDevice.BatteryDisplay})"
-            : $"Battery Indicator: {connectedCount} device{(connectedCount == 1 ? "" : "s")}";
+            ? $"Battery Indicator for Windows: {primaryDevice.Name} ({primaryDevice.BatteryDisplay})"
+            : $"Battery Indicator for Windows: {connectedCount} device{(connectedCount == 1 ? "" : "s")}";
 
         if (tooltip.Length >= 64) tooltip = tooltip.Substring(0, 60) + "...";
         _notifyIcon.Text = tooltip;

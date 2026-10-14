@@ -1,8 +1,8 @@
-#define MyAppName "Battery Indicator"
+#define MyAppName "Battery Indicator for Windows"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "Battery Indicator"
-#define MyAppURL "https://github.com/yourusername/Battery-Indicator"
-#define MyAppExeName "Battery Indicator.exe"
+#define MyAppPublisher "Parv Shah"
+#define MyAppURL "https://github.com/ParvShah2001/Battery-Indicator-for-Windows"
+#define MyAppExeName "Battery Indicator for Windows.exe"
 
 [Setup]
 AppId={{C6D29A44-4A37-4D90-A864-75464197E6A9}
@@ -15,7 +15,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=..\Output
-OutputBaseFilename=BatteryIndicator-Setup-v{#MyAppVersion}
+OutputBaseFilename=BatteryIndicatorForWindows-Setup-v{#MyAppVersion}
 SetupIconFile=..\Resources\Icons\app.ico
 Compression=lzma
 SolidCompression=yes
@@ -28,7 +28,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "startupicon"; Description: "Automatically start Battery Indicator with Windows"; GroupDescription: "Startup:"; Flags: unchecked
+Name: "startupicon"; Description: "Automatically start Battery Indicator for Windows with Windows"; GroupDescription: "Startup:"; Flags: unchecked
 
 [Files]
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -1,7 +1,7 @@
-# 🔋 Battery Indicator for Windows 11
+# 🔋 Battery Indicator for Windows
 
 <p align="center">
-  <img src="Resources/Icons/app.png" alt="Battery Indicator Logo" width="128" height="128" />
+  <img src="Resources/Icons/app.png" alt="Battery Indicator for Windows Logo" width="128" height="128" />
 </p>
 
 <p align="center">
@@ -9,25 +9,25 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ParvShah2001/Battery-Indicator"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Windows%2010-0078D4?logo=windows&logoColor=white" alt="Platform" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator-for-Windows"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Windows%2010-0078D4?logo=windows&logoColor=white" alt="Platform" /></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 9.0" /></a>
-  <a href="https://github.com/ParvShah2001/Battery-Indicator"><img src="https://img.shields.io/badge/Language-C%23-239120?logo=csharp&logoColor=white" alt="C#" /></a>
-  <a href="https://github.com/ParvShah2001/Battery-Indicator/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License" /></a>
-  <a href="https://github.com/ParvShah2001/Battery-Indicator/releases"><img src="https://img.shields.io/badge/Release-v1.2.0-blue" alt="Release" /></a>
-  <a href="https://github.com/microsoft/winget-pkgs"><img src="https://img.shields.io/badge/WinGet-ParvShah.BatteryIndicator-blueviolet?logo=windows-terminal" alt="WinGet" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator-for-Windows"><img src="https://img.shields.io/badge/Language-C%23-239120?logo=csharp&logoColor=white" alt="C#" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator-for-Windows/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License" /></a>
+  <a href="https://github.com/ParvShah2001/Battery-Indicator-for-Windows/releases"><img src="https://img.shields.io/badge/Release-v1.2.0-blue" alt="Release" /></a>
+  <a href="https://github.com/microsoft/winget-pkgs"><img src="https://img.shields.io/badge/WinGet-ParvShah.BatteryIndicatorforWindows-blueviolet?logo=windows-terminal" alt="WinGet" /></a>
 </p>
 
 <p align="center">
-  <img src="social-preview.png" alt="Battery Indicator Windows 11 Showcase" width="100%" />
+  <img src="social-preview.png" alt="Battery Indicator for Windows 11 Showcase" width="100%" />
 </p>
 
 ---
 
-## 📌 Why Battery Indicator?
+## 📌 Why Battery Indicator for Windows?
 
 Windows has a notorious blind spot: **it cannot show the battery percentage of 2.4GHz wireless USB dongle mice, mechanical keyboards, gaming controllers, or TWS earbuds directly in your taskbar system tray**. Manufacturers force you to keep heavy, resource-hungry proprietary bloatware running (Razer Synapse, Logitech G HUB, etc.) just to check if your peripheral is about to die mid-game or mid-work.
 
-**Battery Indicator** solves this with an ultra-lightweight, native, bloat-free Windows 11 utility that queries battery telemetry directly from low-level HID/SPP/GATT protocols and displays them right beside your Windows clock.
+**Battery Indicator for Windows** solves this with an ultra-lightweight, native, bloat-free Windows 11 utility that queries battery telemetry directly from low-level HID/SPP/GATT protocols and displays them right beside your Windows clock.
 
 ---
 
@@ -46,7 +46,7 @@ Windows has a notorious blind spot: **it cannot show the battery percentage of 2
 - **🔌 Uninterruptible Power Supply (UPS) Telemetry**
   - Live battery monitoring for APC, CyberPower, and standard HID Power Device UPS backup systems.
 - **🧩 Crowdsourced Device Profiles (Plugin / JSON Database)**
-  - Zero-code device expansion! Community members can add support for any peripheral by dropping a JSON profile into `%APPDATA%\BatteryIndicator\Profiles\` without recompiling the application.
+  - Zero-code device expansion! Community members can add support for any peripheral by dropping a JSON profile into `%APPDATA%\BatteryIndicatorForWindows\Profiles\` without recompiling the application.
 - **⌨️ Customizable Global Summon Shortcut**
   - Instant flyout popup from anywhere via keyboard shortcut (**Default: `Win + Alt + B`**).
   - Fully customizable to any keybind combination (Ctrl, Alt, Shift, Win + Key) via interactive Settings UI.
@@ -55,7 +55,7 @@ Windows has a notorious blind spot: **it cannot show the battery percentage of 2
   - Unhide all devices in one click from the tray settings menu.
 - **🛡️ Telemetry-Free, Local-Only Crash Reporting**
   - **Zero Telemetry Guarantee:** 100% offline. No analytics, tracking, or personal data transmitted to any external server.
-  - When an unexpected error occurs, sanitized diagnostic logs (with all personal paths and usernames redacted) are stored strictly on your local disk in `%APPDATA%\BatteryIndicator\CrashReports\`.
+  - When an unexpected error occurs, sanitized diagnostic logs (with all personal paths and usernames redacted) are stored strictly on your local disk in `%APPDATA%\BatteryIndicatorForWindows\CrashReports\`.
 - **⚠️ Smart Low Battery Alerts**
   - Native Windows notifications when any peripheral reaches a configurable threshold (**default: <20%**, customizable from 5% to 50%).
   - Cooldown safeguard prevents notification spam.
@@ -69,7 +69,7 @@ Windows has a notorious blind spot: **it cannot show the battery percentage of 2
 
 ```
 ┌──────────────────────────────────────────────┐
-│  🔋 Battery Indicator              [Refresh]  │
+│  🔋 Battery Indicator for Windows  [Refresh] │
 ├──────────────────────────────────────────────┤
 │  [🖱️] Logitech G PRO X Superlight     85% [+] │
 │      2.4 GHz                                 │
@@ -96,18 +96,18 @@ Windows has a notorious blind spot: **it cannot show the battery percentage of 2
 
 ### Option 1: Install via Windows Package Manager (WinGet)
 ```powershell
-winget install ParvShah.BatteryIndicator
+winget install ParvShah.BatteryIndicatorforWindows
 ```
 
 ### Option 2: Install via Scoop
 ```powershell
 scoop bucket add extras
-scoop install battery-indicator
+scoop install battery-indicator-for-windows
 ```
 
 ### Option 3: Pre-built Portable Binary
-1. Download the latest release archive from [GitHub Releases](https://github.com/ParvShah2001/Battery-Indicator/releases).
-2. Extract the folder and run **`Battery Indicator.exe`**.
+1. Download the latest release archive from [GitHub Releases](https://github.com/ParvShah2001/Battery-Indicator-for-Windows/releases).
+2. Extract the folder and run **`Battery Indicator for Windows.exe`**.
 3. The app will launch silently into your taskbar system tray.
 
 ### Option 4: Build MSIX Package
@@ -157,8 +157,8 @@ Battery Indicator features a plugin-based JSON profile architecture. You can eas
 ### Build & Run:
 ```powershell
 # Clone the repository
-git clone https://github.com/ParvShah2001/Battery-Indicator.git
-cd Battery-Indicator
+git clone https://github.com/ParvShah2001/Battery-Indicator-for-Windows.git
+cd Battery-Indicator-for-Windows
 
 # Build and run
 dotnet run
@@ -173,7 +173,7 @@ dotnet publish -c Release -r win-x64 --self-contained false -o publish
 
 ## 🎨 Custom Icons Guide
 
-Place custom transparent `.png` or `.ico` files in `Resources\Icons\` (or `%APPDATA%\BatteryIndicator\Icons\`) to customize device silhouettes:
+Place custom transparent `.png` or `.ico` files in `Resources\Icons\` (or `%APPDATA%\BatteryIndicatorForWindows\Icons\`) to customize device silhouettes:
 
 | Filename | Purpose | Recommended Resolution |
 | :--- | :--- | :--- |
@@ -190,7 +190,7 @@ Place custom transparent `.png` or `.ico` files in `Resources\Icons\` (or `%APPD
 
 ## 🔒 Privacy & Telemetry Policy
 
-Battery Indicator is strictly **100% Telemetry-Free**:
+Battery Indicator for Windows is strictly **100% Telemetry-Free**:
 - Completely offline execution.
 - No network requests, tracking analytics, or telemetry sent to any server.
 - All crash logs are stored strictly on your local disk with usernames and personal file paths redacted.
@@ -201,7 +201,7 @@ Battery Indicator is strictly **100% Telemetry-Free**:
 ## 🤝 Contributing & Community Profiles
 
 Contributions, device profile submissions, and bug reports are warmly welcome!
-- **Bug Reports & Feature Requests:** [GitHub Issues](https://github.com/ParvShah2001/Battery-Indicator/issues)
+- **Bug Reports & Feature Requests:** [GitHub Issues](https://github.com/ParvShah2001/Battery-Indicator-for-Windows/issues)
 - **Submit Device Profiles:** Open a Pull Request adding your JSON profile to `Resources/device_profiles.json`.
 
 ---

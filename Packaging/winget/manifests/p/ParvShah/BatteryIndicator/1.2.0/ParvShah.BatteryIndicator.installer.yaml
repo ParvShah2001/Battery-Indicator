@@ -17,7 +17,7 @@ Protocols:
 Installers:
   - Architecture: x64
     InstallerType: msix
-    InstallerUrl: https://github.com/ParvShah2001/Battery-Indicator/releases/download/v1.2.0/BatteryIndicator-1.2.0.msix
+    InstallerUrl: https://github.com/ParvShah2001/Battery-Indicator-for-Windows/releases/download/v1.2.0/BatteryIndicatorForWindows-1.2.0.msix
     InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000 # Update with actual release SHA256
     SignatureSha256: 0000000000000000000000000000000000000000000000000000000000000000
 ManifestType: installer

@@ -7,19 +7,20 @@ namespace BatteryIndicator.Services;
 
 /// <summary>
 /// Manages Windows startup registration (HKCU\Software\Microsoft\Windows\CurrentVersion\Run)
-/// allowing Battery Indicator to start automatically when the user logs in.
+/// allowing Battery Indicator for Windows to start automatically when the user logs in.
 /// </summary>
 public static class StartupManager
 {
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    private const string ValueName = "BatteryIndicator";
+    private const string ValueName = "BatteryIndicatorForWindows";
+    private const string LegacyValueName = "BatteryIndicator";
 
     public static bool IsStartupEnabled()
     {
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, false);
-            return key?.GetValue(ValueName) != null;
+            return key?.GetValue(ValueName) != null || key?.GetValue(LegacyValueName) != null;
         }
         catch
         {
@@ -40,11 +41,13 @@ public static class StartupManager
                 if (!string.IsNullOrWhiteSpace(exePath))
                 {
                     key.SetValue(ValueName, $"\"{exePath}\"");
+                    key.DeleteValue(LegacyValueName, false);
                 }
             }
             else
             {
                 key.DeleteValue(ValueName, false);
+                key.DeleteValue(LegacyValueName, false);
             }
         }
         catch (Exception ex)

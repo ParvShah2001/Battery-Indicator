@@ -18,7 +18,8 @@ public static class IconManager
 {
     private static readonly ConcurrentDictionary<string, Image?> _imageCache = new();
     private static readonly string IconsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Icons");
-    private static readonly string UserIconsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator", "Icons");
+    private static readonly string UserIconsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicatorForWindows", "Icons");
+    private static readonly string LegacyUserIconsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BatteryIndicator", "Icons");
 
     private static readonly ImageAttributes WhiteSilhouetteAttributes;
 
@@ -312,7 +313,7 @@ public static class IconManager
     private static Image? TryLoadImageFromDisk(string baseName)
     {
         string[] extensions = { ".png", ".ico", ".jpg", ".jpeg" };
-        string[] searchDirs = { UserIconsDirectory, IconsDirectory, AppDomain.CurrentDomain.BaseDirectory };
+        string[] searchDirs = { UserIconsDirectory, LegacyUserIconsDirectory, IconsDirectory, AppDomain.CurrentDomain.BaseDirectory };
 
         foreach (var dir in searchDirs)
         {

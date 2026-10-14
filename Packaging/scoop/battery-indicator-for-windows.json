@@ -1,0 +1,27 @@
+{
+  "version": "1.2.0",
+  "description": "Modern Windows 11 system tray battery monitor for 2.4GHz wireless dongles, Bluetooth peripherals, and gaming gear.",
+  "homepage": "https://github.com/ParvShah2001/Battery-Indicator-for-Windows",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/ParvShah2001/Battery-Indicator-for-Windows/releases/download/v1.2.0/BatteryIndicatorForWindows-1.2.0-win-x64.zip",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "bin": "Battery Indicator for Windows.exe",
+  "shortcuts": [
+    [
+      "Battery Indicator for Windows.exe",
+      "Battery Indicator for Windows"
+    ]
+  ],
+  "checkver": "github",
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/ParvShah2001/Battery-Indicator-for-Windows/releases/download/v$version/BatteryIndicatorForWindows-$version-win-x64.zip"
+      }
+    }
+  }
+}

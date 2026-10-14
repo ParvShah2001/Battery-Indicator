@@ -51,19 +51,19 @@ public class DeviceListFlyoutForm : Form
         _onPinToggled = onPinToggled;
         _onCardChanged = onCardChanged;
 
-        Text = "Battery Indicator";
+        Text = "Battery Indicator for Windows";
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         ShowInTaskbar = false;
         TopMost = true;
-        Size = new Size(388, 390);
+        Size = new Size(418, 400);
         BackColor = Color.FromArgb(24, 24, 24); // Windows 11 Dark Mica / Shell base
         ForeColor = Color.White;
         DoubleBuffered = true;
 
         ApplyWindows11DwmStyling();
 
-        // Main layout container (locks width to 356px inside padding)
+        // Main layout container (locks width to 386px inside padding)
         var mainContainer = new Panel
         {
             Dock = DockStyle.Fill,
@@ -79,25 +79,35 @@ public class DeviceListFlyoutForm : Form
             BackColor = Color.FromArgb(24, 24, 24)
         };
 
-        _headerTitle = new Label
-        {
-            Text = "Battery Indicator",
-            Font = new Font("Segoe UI Variable Display", 13.5f, FontStyle.Bold),
-            ForeColor = Color.FromArgb(240, 240, 240),
-            AutoSize = true,
-            Location = new Point(0, 4)
-        };
-
         _refreshBtn = new ModernPillButton
         {
             Text = "Refresh",
             Size = new Size(76, 28),
-            Location = new Point(280, 5),
+            Location = new Point(310, 6),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
             CornerRadius = 7,
             NormalColor = Color.FromArgb(34, 34, 34),
             HoverColor = Color.FromArgb(48, 48, 48)
         };
         _refreshBtn.Click += (s, e) => _onRefreshRequested();
+
+        _headerTitle = new Label
+        {
+            Text = "Battery Indicator for Windows",
+            Font = new Font("Segoe UI Variable Display", 11f, FontStyle.Bold),
+            ForeColor = Color.FromArgb(240, 240, 240),
+            AutoSize = false,
+            Location = new Point(0, 6),
+            Size = new Size(300, 28),
+            TextAlign = ContentAlignment.MiddleLeft,
+            AutoEllipsis = true
+        };
+
+        headerPanel.Resize += (s, e) =>
+        {
+            _refreshBtn.Location = new Point(headerPanel.ClientSize.Width - _refreshBtn.Width, 6);
+            _headerTitle.Size = new Size(Math.Max(50, headerPanel.ClientSize.Width - _refreshBtn.Width - 10), 28);
+        };
 
         headerPanel.Controls.Add(_headerTitle);
         headerPanel.Controls.Add(_refreshBtn);
@@ -115,7 +125,7 @@ public class DeviceListFlyoutForm : Form
             Font = new Font("Segoe UI Variable Small", 8.5f, FontStyle.Regular),
             ForeColor = Color.FromArgb(140, 140, 140),
             Location = new Point(0, 3),
-            Size = new Size(190, 20),
+            Size = new Size(200, 20),
             TextAlign = ContentAlignment.MiddleLeft,
             Text = "Last updated - " + DateTime.Now.ToString("hh:mm tt")
         };
@@ -124,10 +134,17 @@ public class DeviceListFlyoutForm : Form
         {
             Font = new Font("Segoe UI Variable Small", 8.5f, FontStyle.Regular),
             ForeColor = Color.FromArgb(140, 140, 140),
-            Location = new Point(190, 3),
-            Size = new Size(166, 20),
+            Location = new Point(236, 3),
+            Size = new Size(150, 20),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
             TextAlign = ContentAlignment.MiddleRight,
             Text = "Devices - 0"
+        };
+
+        footerPanel.Resize += (s, e) =>
+        {
+            _footerRight.Location = new Point(footerPanel.ClientSize.Width - _footerRight.Width, 3);
+            _footerLeft.Size = new Size(Math.Max(50, footerPanel.ClientSize.Width - _footerRight.Width - 10), 20);
         };
 
         footerPanel.Controls.Add(_footerLeft);
@@ -144,7 +161,11 @@ public class DeviceListFlyoutForm : Form
 
         _bottomArrowBtn = new BottomArrowIndicator
         {
-            Location = new Point((356 - 54) / 2, 2)
+            Location = new Point((386 - 54) / 2, 2)
+        };
+        _bottomArrowPanel.Resize += (s, e) =>
+        {
+            _bottomArrowBtn.Location = new Point((_bottomArrowPanel.ClientSize.Width - _bottomArrowBtn.Width) / 2, 2);
         };
         _bottomArrowBtn.ArrowClicked += (s, e) => ScrollDelta(76); // Scrolls down by 1 card step
         _bottomArrowPanel.Controls.Add(_bottomArrowBtn);
@@ -163,7 +184,7 @@ public class DeviceListFlyoutForm : Form
         _cardsInnerPanel = new Panel
         {
             Location = new Point(0, 0),
-            Width = 356,
+            Width = 386,
             Height = 0,
             BackColor = Color.FromArgb(24, 24, 24),
             AutoScroll = false
@@ -251,6 +272,9 @@ public class DeviceListFlyoutForm : Form
         _cardsInnerPanel.SuspendLayout();
         _cardsInnerPanel.Controls.Clear();
 
+        int contentWidth = _viewportPanel.ClientSize.Width > 0 ? _viewportPanel.ClientSize.Width : 386;
+        _cardsInnerPanel.Width = contentWidth;
+
         // Filter out user-hidden devices
         var visibleDevices = devices.Where(d => !SettingsManager.IsDeviceHidden(d.Id)).ToList();
 
@@ -262,7 +286,7 @@ public class DeviceListFlyoutForm : Form
                 Font = new Font("Segoe UI Variable Text", 9.5f, FontStyle.Regular),
                 ForeColor = Color.FromArgb(130, 130, 130),
                 AutoSize = false,
-                Size = new Size(356, 80),
+                Size = new Size(contentWidth, 80),
                 Location = new Point(0, 20),
                 TextAlign = ContentAlignment.MiddleCenter
             };
@@ -277,7 +301,7 @@ public class DeviceListFlyoutForm : Form
                 var card = new ModernBatteryDeviceCard(dev, onPinToggled: _onPinToggled, onCardChanged: _onCardChanged)
                 {
                     Location = new Point(0, y),
-                    Width = 356
+                    Width = contentWidth
                 };
                 card.MouseWheel += (s, e) => ScrollDelta(e.Delta > 0 ? -60 : 60);
                 _cardsInnerPanel.Controls.Add(card);
